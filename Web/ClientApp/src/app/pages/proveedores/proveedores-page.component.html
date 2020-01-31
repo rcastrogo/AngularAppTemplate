@@ -9,17 +9,19 @@
     <thead>
       <tr>
         <th>Id</th>
-        <th>Código</th>
+        <th>Nif</th>
         <th>Nombre</th>
+        <th>Descripción</th>
         <th>Fecha</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let proveedor of proveedores">
         <td>{{ proveedor.id }}</td>
-        <td>{{ proveedor.codigo }}</td>
+        <td>{{ proveedor.nif }}</td>
+        <td>{{ proveedor.nombre }}</td>
         <td>{{ proveedor.descripcion }}</td>
-        <td>{{ proveedor.fechaDeInsert | datePart }}</td>
+        <td>{{ proveedor.fechaDeAlta | datePart }}</td>
       </tr>
     </tbody>
   </table>

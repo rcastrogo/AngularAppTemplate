@@ -9,16 +9,18 @@
     <thead>
       <tr>
         <th>Id</th>
-        <th>Código</th>
-        <th>Nombre</th>
+        <th>Matrícula</th>
+        <th>Marca</th>
+        <th>Modelo</th>
         <th>Fecha</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let vehiculo of vehiculos">
-        <td>{{ vehiculo.id }}</td> 
-        <td>{{ vehiculo.codigo }}</td>
-        <td>{{ vehiculo.descripcion }}</td>
+        <td>{{ vehiculo.id }}</td>
+        <td>{{ vehiculo.matricula }}</td>
+        <td>{{ vehiculo.marca }}</td>
+        <td>{{ vehiculo.modelo }}</td>
         <td>{{ vehiculo.fechaDeAlta | datePart }}</td>
       </tr>
     </tbody>

@@ -15,7 +15,9 @@ namespace Dal.Core.Connections.Builders
     public IDbConnection CreateConnection()
     {
       // TODO: Modificar acceso a la cadena de conexión
-      SqlConnection connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PTSSC_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+      //SqlConnection connection = new SqlConnection("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=PTSSC_DB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+      SqlConnection connection = new SqlConnection("Data Source=PCRAFA\\SQLPRUEBA2;Initial Catalog=TOLEDO; Integrated Security=True;");
+
       connection.Open();
       _hash.Add(connection.GetHashCode(), DateTime.Now);
       connection.Disposed += new EventHandler(SqlServerConnectionBuilder.OnDisposeConnection);

@@ -8,10 +8,10 @@ using System.Data;
 namespace Dal.Repositories
 {
 
-  [RepoName("Dal.Repositories.UsuariosRepository")]
-  public class UsuariosRepository : RepositoryBase {
+  [RepoName("Dal.Repositories.ProveedoresRepository")]
+  public class ProveedoresRepository : RepositoryBase {
   
-      public UsuariosRepository(DbContext context) : base(context) { }
+      public ProveedoresRepository(DbContext context) : base(context) { }
         
       public IDataReader GetItems(Dictionary<string, string> @params){
           return GetItems(__toQuery(@params));

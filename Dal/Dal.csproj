@@ -13,27 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="MetaData\Reports.Binders.txt" />
-    <None Remove="MetaData\Reports.Queries.txt" />
-    <None Remove="MetaData\Reports.Serializers.txt" />
-    <None Remove="MetaData\_main.Binders.txt" />
-    <None Remove="MetaData\_main.Queries.txt" />
-    <None Remove="MetaData\_main.Serializers.txt" />
-    <None Remove="MetaData\_messenger.binders.txt" />
-    <None Remove="MetaData\_messenger.queries.txt" />
-    <None Remove="MetaData\_messenger.serializers.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="MetaData\Reports.Binders.txt" />
-    <EmbeddedResource Include="MetaData\Reports.Queries.txt" />
-    <EmbeddedResource Include="MetaData\Reports.Serializers.txt" />
     <EmbeddedResource Include="MetaData\_main.Binders.txt" />
     <EmbeddedResource Include="MetaData\_main.Queries.txt" />
-    <EmbeddedResource Include="MetaData\_main.Serializers.txt" />
     <EmbeddedResource Include="MetaData\_messenger.binders.txt" />
     <EmbeddedResource Include="MetaData\_messenger.queries.txt" />
-    <EmbeddedResource Include="MetaData\_messenger.serializers.txt" />
   </ItemGroup>
 
   <ItemGroup>

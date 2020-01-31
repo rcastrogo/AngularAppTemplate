@@ -22,9 +22,9 @@ namespace Negocio.Entities
     public Usuario Save(){
       using (UsuariosRepository repo = new UsuariosRepository(DataContext)){
         if(_id == 0){
-          _id = repo.Insert(Codigo, Descripcion, ModificadoPor, FechaDeAlta, FechaDeModificacion, Email);
+          _id = repo.Insert(Nif, Nombre, Descripcion);
         } else{
-          repo.Update(Id, Codigo, Descripcion, ModificadoPor, FechaDeAlta, FechaDeModificacion, Email);
+          repo.Update(Id, Nif, Nombre, Descripcion);
         }
         return this;
       }
@@ -36,19 +36,25 @@ namespace Negocio.Entities
       }
     }
   
-
-    int _id;
+        int _id;
     public override int Id  
     {
       get { return _id; }         
       set { _id = value; }
     }
 
-    String _codigo;
-    public String Codigo  
+    String _nif;
+    public String Nif  
     {
-      get { return _codigo; }         
-      set { _codigo = value; }
+      get { return _nif; }         
+      set { _nif = value; }
+    }
+
+    String _nombre;
+    public String Nombre  
+    {
+      get { return _nombre; }         
+      set { _nombre = value; }
     }
 
     String _descripcion;
@@ -58,32 +64,11 @@ namespace Negocio.Entities
       set { _descripcion = value; }
     }
 
-    String _modificadoPor;
-    public String ModificadoPor  
-    {
-      get { return _modificadoPor; }         
-      set { _modificadoPor = value; }
-    }
-
     String _fechaDeAlta;
     public String FechaDeAlta  
     {
       get { return _fechaDeAlta; }         
       set { _fechaDeAlta = value; }
-    }
-
-    String _fechaDeModificacion;
-    public String FechaDeModificacion  
-    {
-      get { return _fechaDeModificacion; }         
-      set { _fechaDeModificacion = value; }
-    }
-
-    String _email;
-    public String Email  
-    {
-      get { return _email; }         
-      set { _email = value; }
     }
 
   }

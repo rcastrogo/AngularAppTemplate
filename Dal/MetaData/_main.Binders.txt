@@ -1,24 +1,30 @@
-
-; ===========================================================
-; Negocio.Entities.Perfil
-; ===========================================================
-#Negocio.Entities.Perfil
- 0, _id                           , Integer
- 1, _codigo                       
- 2, _descripcion                  
- 3, _modificadoPor                
- 4, _fechaDeAlta                  , datetime
- 5, _fechaDeModificacion          , datetime
  
 ; ===========================================================
 ; Negocio.Entities.Usuario
 ; ===========================================================
 #Negocio.Entities.Usuario
  0, _id                           , Integer
- 1, _codigo                       
- 2, _descripcion                  
- 3, _email  
- 4, _modificadoPor                
- 5, _fechaDeAlta                  , datetime
- 6, _fechaDeModificacion          , datetime
+ 1, _nif                       
+ 2, _nombre                  
+ 3, _descripcion                   
+ 4, _fechaDeAlta                  , datetime
                       
+; ===========================================================
+; Negocio.Entities.Proveedor
+; ===========================================================
+#Negocio.Entities.Proveedor
+ 0, _id                           , Integer
+ 1, _nif                       
+ 2, _nombre                  
+ 3, _descripcion                   
+ 4, _fechaDeAlta                  , datetime
+
+; ===========================================================
+; Negocio.Entities.Vehiculo
+; ===========================================================
+#Negocio.Entities.Vehiculo
+ 0, _id                           , Integer
+ 1, _matricula                       
+ 2, _marca                  
+ 3, _modelo                   
+ 4, _fechaDeAlta                  , datetime

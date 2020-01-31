@@ -1,3 +1,10 @@
+
+CREATE DATABASE TOLEDO
+GO
+
+USE TOLEDO
+GO
+
 SET ANSI_NULLS ON
 SET QUOTED_IDENTIFIER ON
 
@@ -102,56 +109,56 @@ GO
 INSERT INTO Messenger_User (UserId,UserName) VALUES ('SYSTEM','Sistema')
 GO
 
-
-CREATE TABLE [dbo].[T_NOMBRES](
+CREATE TABLE [dbo].[Usuario](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
+    [Nif] [nvarchar](50) NOT NULL,
 	[Nombre] [nvarchar](50) NOT NULL,
 	[Descripcion] [nvarchar](50) NOT NULL,
- CONSTRAINT [PK_T_NOMBRES] PRIMARY KEY CLUSTERED 
+	[FechaDeAlta] [datetime] NOT NULL
+ CONSTRAINT [PK_Usuario] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+INSERT INTO [dbo].[Usuario] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('04179642J','Rafael Castro Gómez', 'Usuario administrador', GETDATE());
+INSERT INTO [dbo].[Usuario] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('04170000J','José Gómez', 'Usuario genérico', GETDATE());
+INSERT INTO [dbo].[Usuario] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('04170001K','María López Santiago', 'Usuario genérico', GETDATE());
+INSERT INTO [dbo].[Usuario] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('04100000B','Theressa Kaspar', 'Usuario genérico', GETDATE());
+
+
+CREATE TABLE [dbo].[Proveedor](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+    [Nif] [nvarchar](50) NOT NULL,
+	[Nombre] [nvarchar](50) NOT NULL,
+	[Descripcion] [nvarchar](50) NOT NULL,
+	[FechaDeAlta] [datetime] NOT NULL
+ CONSTRAINT [PK_Proveedor] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
-/* Tabla de Perfiles  */
-CREATE TABLE T_SEG_PERFILES
+INSERT INTO [dbo].[Proveedor] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('03479642J','Rafael Castro Gómez', 'Empresa Informática', GETDATE());
+INSERT INTO [dbo].[Proveedor] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('03470000J','Kimberli Gómez', 'Empresa constructora', GETDATE());
+INSERT INTO [dbo].[Proveedor] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('03470001K','Allyson López Santiago', 'Mercadona', GETDATE());
+INSERT INTO [dbo].[Proveedor] (Nif, Nombre, Descripcion, FechaDeAlta) VALUES ('03400000B','Theressa Kaspar', 'El Corte Inglés', GETDATE());
+
+
+CREATE TABLE [dbo].[Vehiculo](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+    [Matricula] [nvarchar](10) NOT NULL,
+	[Marca] [nvarchar](50) NOT NULL,
+	[Modelo] [nvarchar](50) NOT NULL,
+	[FechaDeAlta] [datetime] NOT NULL
+ CONSTRAINT [PK_Vehiculo] PRIMARY KEY CLUSTERED 
 (
-	ID              INT IDENTITY(1,1)	NOT NULL,
-	CD_PERFIL	  	NVARCHAR(30)		NOT NULL,		
-	DS_PERFIL  		NVARCHAR(100)		NOT NULL,
-	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
-	FE_ALTA         DATETIME          	NOT NULL,
-	FE_MODIFICACION DATETIME		 		NULL,
-	CONSTRAINT PK_SEG_PERFILES PRIMARY KEY (CD_PERFIL)
-); 
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
 GO
 
-/* Tabla de Gestión de usuarios */
-CREATE TABLE T_SEG_USUARIOS
-(
-	ID              INT IDENTITY(1,1)	NOT NULL,
-	CD_USUARIO	  	NVARCHAR(30)  		NOT NULL,
-	DS_USUARIO	  	NVARCHAR(100)  		NOT NULL,
-	DS_EMAIL		NVARCHAR(60)			NULL,
-	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
-	FE_ALTA         DATETIME          	NOT NULL,
-	FE_MODIFICACION DATETIME				NULL,
-	CONSTRAINT PK_T_SEG_USUARIOS PRIMARY KEY (CD_USUARIO)	
-); 
-GO
-
-/* Tabla de Coordinados */
-CREATE TABLE T_MAE_COORDINADOS
-(
-	ID              INT IDENTITY(1,1)	NOT NULL,	
-	CD_COORDINADO	NVARCHAR(50)  		NOT NULL,
-	DS_COORDINADO	NVARCHAR(100)  		NOT NULL,
-	FE_INI_VIGENCIA	DATETIME		 		NOT NULL,
-	FE_FIN_VIGENCIA	DATETIME		 		NOT NULL,
-	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
-	FE_ALTA         DATETIME          	NOT NULL,
-	FE_MODIFICACION DATETIME				NULL,
-	CONSTRAINT PK_MAE_COORDINADOS PRIMARY KEY (CD_COORDINADO)
-); 
-GO
+INSERT INTO [dbo].[Vehiculo] ([Matricula], [Marca], [Modelo], FechaDeAlta) VALUES ('TO2547AG','Seat', 'Panda', GETDATE());
+INSERT INTO [dbo].[Vehiculo] ([Matricula], [Marca], [Modelo], FechaDeAlta) VALUES ('2385BBC','Seat', 'Cordoba', GETDATE());
+INSERT INTO [dbo].[Vehiculo] ([Matricula], [Marca], [Modelo], FechaDeAlta) VALUES ('0000AAA','Sinca', 'Mil', GETDATE());

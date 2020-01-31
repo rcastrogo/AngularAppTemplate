@@ -1,18 +1,18 @@
 ﻿; ===========================================================
-; Perfil
+; Usuario
 ; ===========================================================
-#Perfil
+#Usuario
 Integer,Id,Id#
-String,Codigo,Cod#
-String,Descripcion,Des
+String,Nif,Nif#
+String,Nombre,Nomb
 
-#PerfilSmall
+#UsuarioSmall
 Integer,Id,i#
-String,Codigo,c#
+String,Nif,n#
 String,Descripcion,d
 
-#PerfilXXX@Negocio.Entities.Perfil
+#VehiculoXXX@Negocio.Entities.Vehiculo
 Integer,Id,i_xxx#
-String,Codigo,c_xxx#
-String,Descripcion,d_xxx
+String,Matricula,mat_xxx#
+String,Marca,marca_xxx
 

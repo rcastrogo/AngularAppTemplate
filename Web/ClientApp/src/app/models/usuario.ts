@@ -1,11 +1,9 @@
 
 export interface Usuario {
-  id: number;
-  codigo: string;
-  descripcion: string;
-  email: string;
-  modificadoPor: string;
-  fechaDeAlta: string;
-  fechaDeModificacion: string;
+  _id: number;
+  _nif: string;
+  _nombre: string;
+  _descripcion: string;  
+  _fechaDeAlta: string;
 }
 

@@ -13,11 +13,11 @@ namespace Controllers
   {
 
     [HttpGet("")]
-    public IEnumerable<Coordinado> GetAll()
+    public IEnumerable<Proveedor> GetAll()
     {
       using( var __dbContex = new DbContext())
       {
-        return new Coordinados(__dbContex).Load();
+        return new Proveedores(__dbContex).Load();
       }
     }
 

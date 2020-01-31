@@ -13,11 +13,11 @@ namespace Controllers
   {
 
     [HttpGet("")]
-    public IEnumerable<Perfil> GetAll()
+    public IEnumerable<Vehiculo> GetAll()
     {
       using( var __dbContex = new DbContext())
       {
-        return new Perfiles(__dbContex).Load();
+        return new Vehiculos(__dbContex).Load();
       }
     }
 

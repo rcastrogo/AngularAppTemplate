@@ -9,17 +9,19 @@
     <thead>
       <tr>
         <th>Id</th>
-        <th>Código</th>
+        <th>Nif</th>
         <th>Nombre</th>
+        <th>Descripción</th>
         <th>Fecha</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let usuario of usuarios">
-        <td>{{ usuario.id }}</td>
-        <td>{{ usuario.codigo }}</td>
-        <td>{{ usuario.descripcion }}</td>
-        <td>{{ usuario.fechaDeAlta | datePart }}</td>
+        <td>{{ usuario._id }}</td>
+        <td>{{ usuario._nif }}</td>
+        <td>{{ usuario._nombre }}</td>
+        <td>{{ usuario._descripcion }}</td>
+        <td>{{ usuario._fechaDeAlta | datePart }}</td>
       </tr>
     </tbody>
   </table>
