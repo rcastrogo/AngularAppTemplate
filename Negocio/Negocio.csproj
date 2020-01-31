@@ -13,6 +13,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Entities\Serializers\Reports.Serializers.txt" />
+    <None Remove="Entities\Serializers\_main.Serializers.txt" />
+    <None Remove="Entities\Serializers\_messenger.serializers.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Entities\Serializers\Reports.Serializers.txt" />
+    <EmbeddedResource Include="Entities\Serializers\_main.Serializers.txt" />
+    <EmbeddedResource Include="Entities\Serializers\_messenger.serializers.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
