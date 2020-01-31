@@ -1,0 +1,31 @@
+
+<div class="w3-container w3-margin-bottom">
+  <h1>Usuarios</h1>
+  <p>Relación de usuarios de la aplicación</p>
+
+  <p *ngIf="!usuarios"><em>Cargando...</em></p>
+
+  <table *ngIf="usuarios" class="w3-table-all">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let usuario of usuarios">
+        <td>{{ usuario.id }}</td>
+        <td>{{ usuario.codigo }}</td>
+        <td>{{ usuario.descripcion }}</td>
+        <td>{{ usuario.fechaDeAlta | datePart }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+
+
+

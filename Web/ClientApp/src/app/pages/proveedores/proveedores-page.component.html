@@ -1,0 +1,31 @@
+
+<div class="w3-container w3-margin-bottom">
+  <h1>Proveedores</h1>
+  <p>Relación de proveedores de la aplicación</p>
+
+  <p *ngIf="!proveedores"><em>Cargando...</em></p>
+
+  <table *ngIf="proveedores" class="w3-table-all">
+    <thead>
+      <tr>
+        <th>Id</th>
+        <th>Código</th>
+        <th>Nombre</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let proveedor of proveedores">
+        <td>{{ proveedor.id }}</td>
+        <td>{{ proveedor.codigo }}</td>
+        <td>{{ proveedor.descripcion }}</td>
+        <td>{{ proveedor.fechaDeInsert | datePart }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>
+
+
+
+

@@ -1,0 +1,157 @@
+SET ANSI_NULLS ON
+SET QUOTED_IDENTIFIER ON
+
+CREATE TABLE [dbo].[Messenger_Group](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Name] [varchar](100) NOT NULL,
+ CONSTRAINT [Messenger_Group_PK] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Messenger_GroupMember](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[GroupId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+ CONSTRAINT [Messenger_GroupMember_PK] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Messenger_Message](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[ParentId] [int] NULL,
+	[UserId] [int] NOT NULL,
+	[SentAt] [datetime] NOT NULL,
+	[Type] [int] NOT NULL,
+	[Subject] [varchar](100) NOT NULL,
+	[Body] [varchar](500) NULL,
+	[Data] [varchar](500) NULL,
+ CONSTRAINT [Messenger_Message_PK] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Messenger_Recipient](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[MessageId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+ CONSTRAINT [Messenger_Recipient_PK] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE TABLE [dbo].[Messenger_User](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[UserId] [varchar](100) NOT NULL,
+	[UserName] [varchar](100) NOT NULL,
+ CONSTRAINT [Messenger_User_PK] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY],
+ CONSTRAINT [IX_Messenger_User] UNIQUE NONCLUSTERED 
+(
+	[UserId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Messenger_GroupMember]  WITH CHECK ADD  CONSTRAINT [FK_Messenger_GroupMember_Messenger_Group] FOREIGN KEY([GroupId])
+REFERENCES [dbo].[Messenger_Group] ([Id])
+GO
+
+ALTER TABLE [dbo].[Messenger_GroupMember] CHECK CONSTRAINT [FK_Messenger_GroupMember_Messenger_Group]
+GO
+
+ALTER TABLE [dbo].[Messenger_GroupMember]  WITH CHECK ADD  CONSTRAINT [FK_Messenger_GroupMember_Messenger_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Messenger_User] ([Id])
+GO
+
+ALTER TABLE [dbo].[Messenger_GroupMember] CHECK CONSTRAINT [FK_Messenger_GroupMember_Messenger_User]
+GO
+
+ALTER TABLE [dbo].[Messenger_Message]  WITH CHECK ADD  CONSTRAINT [FK_Messenger_Message_Messenger_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Messenger_User] ([Id])
+GO
+
+ALTER TABLE [dbo].[Messenger_Message] CHECK CONSTRAINT [FK_Messenger_Message_Messenger_User]
+GO
+
+ALTER TABLE [dbo].[Messenger_Recipient]  WITH NOCHECK ADD  CONSTRAINT [FK_Messenger_Recipient_Messenger_Message] FOREIGN KEY([MessageId])
+REFERENCES [dbo].[Messenger_Message] ([Id])
+GO
+
+ALTER TABLE [dbo].[Messenger_Recipient] CHECK CONSTRAINT [FK_Messenger_Recipient_Messenger_Message]
+GO
+
+ALTER TABLE [dbo].[Messenger_Recipient]  WITH NOCHECK ADD  CONSTRAINT [FK_Messenger_Recipient_Messenger_User] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Messenger_User] ([Id])
+GO
+
+ALTER TABLE [dbo].[Messenger_Recipient] CHECK CONSTRAINT [FK_Messenger_Recipient_Messenger_User]
+GO
+
+INSERT INTO Messenger_User (UserId,UserName) VALUES ('SYSTEM','Sistema')
+GO
+
+
+CREATE TABLE [dbo].[T_NOMBRES](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Nombre] [nvarchar](50) NOT NULL,
+	[Descripcion] [nvarchar](50) NOT NULL,
+ CONSTRAINT [PK_T_NOMBRES] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+/* Tabla de Perfiles  */
+CREATE TABLE T_SEG_PERFILES
+(
+	ID              INT IDENTITY(1,1)	NOT NULL,
+	CD_PERFIL	  	NVARCHAR(30)		NOT NULL,		
+	DS_PERFIL  		NVARCHAR(100)		NOT NULL,
+	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
+	FE_ALTA         DATETIME          	NOT NULL,
+	FE_MODIFICACION DATETIME		 		NULL,
+	CONSTRAINT PK_SEG_PERFILES PRIMARY KEY (CD_PERFIL)
+); 
+GO
+
+/* Tabla de Gestión de usuarios */
+CREATE TABLE T_SEG_USUARIOS
+(
+	ID              INT IDENTITY(1,1)	NOT NULL,
+	CD_USUARIO	  	NVARCHAR(30)  		NOT NULL,
+	DS_USUARIO	  	NVARCHAR(100)  		NOT NULL,
+	DS_EMAIL		NVARCHAR(60)			NULL,
+	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
+	FE_ALTA         DATETIME          	NOT NULL,
+	FE_MODIFICACION DATETIME				NULL,
+	CONSTRAINT PK_T_SEG_USUARIOS PRIMARY KEY (CD_USUARIO)	
+); 
+GO
+
+/* Tabla de Coordinados */
+CREATE TABLE T_MAE_COORDINADOS
+(
+	ID              INT IDENTITY(1,1)	NOT NULL,	
+	CD_COORDINADO	NVARCHAR(50)  		NOT NULL,
+	DS_COORDINADO	NVARCHAR(100)  		NOT NULL,
+	FE_INI_VIGENCIA	DATETIME		 		NOT NULL,
+	FE_FIN_VIGENCIA	DATETIME		 		NOT NULL,
+	CD_USUARIO_MOD  NVARCHAR(30) 		NOT NULL,
+	FE_ALTA         DATETIME          	NOT NULL,
+	FE_MODIFICACION DATETIME				NULL,
+	CONSTRAINT PK_MAE_COORDINADOS PRIMARY KEY (CD_COORDINADO)
+); 
+GO
