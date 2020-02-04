@@ -4,24 +4,29 @@
   <p>Relación de proveedores de la aplicación</p>
 
   <p *ngIf="!proveedores"><em>Cargando...</em></p>
-
+  <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
   <table *ngIf="proveedores" class="w3-table-all">
     <thead>
-      <tr>
-        <th>Id</th>
-        <th>Nif</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Fecha</th>
+      <tr (click)="doSort($event)">
+        <th style="width:1%;"></th>
+        <th class="w3-hover-gray sorteable">Id</th>
+        <th class="w3-hover-gray sorteable">Nif</th>
+        <th class="w3-hover-gray sorteable">Nombre</th>
+        <th class="w3-hover-gray sorteable">Descripción</th>
+        <th class="w3-hover-gray sorteable">Fecha</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let proveedor of proveedores">
-        <td>{{ proveedor.id }}</td>
-        <td>{{ proveedor.nif }}</td>
-        <td>{{ proveedor.nombre }}</td>
-        <td>{{ proveedor.descripcion }}</td>
-        <td>{{ proveedor.fechaDeAlta | datePart }}</td>
+      <tr *ngFor="let proveedor of proveedores" id="row-{{proveedor._id}}">
+        <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
+        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ proveedor._id }}</a></td>
+        <td>{{ proveedor._nif }}</td>
+        <td>{{ proveedor._nombre }}</td>
+        <td>{{ proveedor._descripcion }}</td>
+        <td>
+          {{ proveedor._fechaDeAlta | datePart }}
+          <button title="Añadir a favoritos" class="fa fa-star" style="float:right" (click)="doAddToFavorites($event)"></button>
+        </td>
       </tr>
     </tbody>
   </table>

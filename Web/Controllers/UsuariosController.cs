@@ -14,11 +14,14 @@ namespace Controllers
   {
 
     [HttpGet("")]
-    public string GetAll()
+    public IActionResult GetAll()
     {
       using( var __dbContex = new DbContext())
       {
-        return new Usuarios(__dbContex).Load().ToJsonString();
+        return Ok( 
+          new Usuarios(__dbContex).Load()
+                                  .ToJsonString()
+        );
       }
     }
 

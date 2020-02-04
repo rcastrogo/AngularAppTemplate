@@ -5,28 +5,49 @@
 
   <p *ngIf="!vehiculos"><em>Cargando...</em></p>
 
+  <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
   <table *ngIf="vehiculos" class="w3-table-all">
     <thead>
-      <tr>
-        <th>Id</th>
-        <th>Matrícula</th>
-        <th>Marca</th>
-        <th>Modelo</th>
-        <th>Fecha</th>
+      <tr (click)="doSort($event)">
+        <th style="width:1%;"></th>
+        <th class="w3-hover-gray sorteable">Id</th>
+        <th class="w3-hover-gray sorteable">Matrícula</th>
+        <th class="w3-hover-gray sorteable">Marca</th>
+        <th class="w3-hover-gray sorteable">Modelo</th>
+        <th class="w3-hover-gray sorteable">Fecha</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let vehiculo of vehiculos">
-        <td>{{ vehiculo.id }}</td>
-        <td>{{ vehiculo.matricula }}</td>
-        <td>{{ vehiculo.marca }}</td>
-        <td>{{ vehiculo.modelo }}</td>
-        <td>{{ vehiculo.fechaDeAlta | datePart }}</td>
+      <tr *ngFor="let vehiculo of vehiculos" id="row-{{vehiculo._id}}">
+        <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
+        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ vehiculo._id }}</a></td>
+        <td>{{ vehiculo._matricula }}</td>
+        <td>{{ vehiculo._marca }}</td>
+        <td>{{ vehiculo._modelo }}</td>
+        <td>{{ vehiculo._fechaDeAlta | datePart }}
+          <button title="Añadir a favoritos" class="fa fa-star" style="float:right" (click)="doAddToFavorites($event)"></button>
+        </td>
       </tr>
     </tbody>
   </table>
 
 </div>
+
+<form id="vehiculo-edit-dialog" class="" style="display:none">
+  <label for="txt-id">Id</label>
+  <input id="txt-id" type="text" class="w3-input w3-border w3-round" readonly [ngModel]="current._id" [ngModelOptions]="{standalone: true}" /><br />
+  <label for="txt-matricula">Matrícula</label>
+  <input id="txt-matricula" type="text" class="w3-input w3-border w3-round" [ngModel]="current._matricula" [ngModelOptions]="{standalone: true}" /><br />
+
+  <label for="txt-marca">Marca</label>
+  <input id="txt-marca" type="text" class="w3-input w3-border w3-round" [ngModel]="current._marca" [ngModelOptions]="{standalone: true}" /><br />
+  <label for="txt-modelo">Modelo</label>
+  <input id="txt-modelo" type="text" class="w3-input w3-border w3-round" [ngModel]="current._modelo" [ngModelOptions]="{standalone: true}" /><br />
+
+  <input class="w3-check" type="checkbox" checked="checked">
+  <label>Aire acondicionado</label>
+
+</form>
 
 
 

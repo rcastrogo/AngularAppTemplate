@@ -11,6 +11,7 @@ import { CounterComponent } from './counter/counter.component';
 import { UsersPageComponent, ProveedoresPageComponent, VehiculosPageComponent } from './pages/index';
 import { AboutComponent } from './about/about.component';
 import { DatePart } from "./pipes/datePart.pipe";
+import { TableHeaderComponent } from './components/table-header/table-header.component';
 
 
 @NgModule({
@@ -23,7 +24,8 @@ import { DatePart } from "./pipes/datePart.pipe";
     ProveedoresPageComponent,
     VehiculosPageComponent,
     AboutComponent,
-    DatePart
+    DatePart,
+    TableHeaderComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

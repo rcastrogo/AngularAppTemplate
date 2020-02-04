@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Dal.Core;
 using Negocio.Entities;
+using Negocio;
 
 namespace Controllers
 {
@@ -13,11 +14,14 @@ namespace Controllers
   {
 
     [HttpGet("")]
-    public IEnumerable<Proveedor> GetAll()
+    public IActionResult GetAll()
     {
       using( var __dbContex = new DbContext())
       {
-        return new Proveedores(__dbContex).Load();
+        return Ok( 
+          new Proveedores(__dbContex).Load()
+                                     .ToJsonString()
+        );
       }
     }
 

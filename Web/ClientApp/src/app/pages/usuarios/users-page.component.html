@@ -1,32 +1,38 @@
 
-<div class="w3-container w3-margin-bottom">
-  <h1>Usuarios</h1>
-  <p>Relación de usuarios de la aplicación</p>
+  <div class="w3-container w3-margin-bottom">
+    <h1>Usuarios</h1>
+    <p>Relación de usuarios de la aplicación</p>
 
-  <p *ngIf="!usuarios"><em>Cargando...</em></p>
+    <p *ngIf="!usuarios"><em>Cargando...</em></p>
 
-  <table *ngIf="usuarios" class="w3-table-all">
-    <thead>
-      <tr>
-        <th>Id</th>
-        <th>Nif</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let usuario of usuarios">
-        <td>{{ usuario._id }}</td>
-        <td>{{ usuario._nif }}</td>
-        <td>{{ usuario._nombre }}</td>
-        <td>{{ usuario._descripcion }}</td>
-        <td>{{ usuario._fechaDeAlta | datePart }}</td>
-      </tr>
-    </tbody>
-  </table>
+    <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
+    <table *ngIf="usuarios" class="w3-table-all">
+      <thead>
+        <tr (click)="doSort($event)">
+          <th style="width:1%;"></th>
+          <th class="w3-hover-gray sorteable">Id</th>
+          <th class="w3-hover-gray sorteable">Nif</th>
+          <th class="w3-hover-gray sorteable">Nombre</th>
+          <th class="w3-hover-gray sorteable">Descripción</th>
+          <th class="w3-hover-gray sorteable">Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let usuario of usuarios" id="row-{{usuario._id}}">
+          <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
+          <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ usuario._id }}</a></td>
+          <td>{{ usuario._nif }}</td>
+          <td>{{ usuario._nombre }}</td>
+          <td>{{ usuario._descripcion }}</td>
+          <td>
+            {{ usuario._fechaDeAlta | datePart }}
+            <button title="Añadir a favoritos" class="fa fa-star" style="float:right" (click)="doAddToFavorites($event)"></button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
 
-</div>
+  </div>
 
 
 

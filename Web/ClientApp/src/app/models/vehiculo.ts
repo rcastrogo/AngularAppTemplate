@@ -1,8 +1,8 @@
 
 export interface Vehiculo {
-  id: number;
-  nif: string;
-  marca: string;
-  modelo: string;
-  fechaDeAlta: string;
+  _id: number;
+  _matricula: string;
+  _marca: string;
+  _modelo: string;
+  _fechaDeAlta: string;
 }

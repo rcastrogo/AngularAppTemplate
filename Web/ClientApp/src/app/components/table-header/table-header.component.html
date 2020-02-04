@@ -1,0 +1,16 @@
+
+  <div class="w3-bar w3-border-top w3-border-left w3-border-right">
+
+    <span class="w3-left" style="padding:6px 0 4px 8px;">{{pagination.title}}: {{pagination.data.length}} elementos</span>
+
+    <button class="w3-button w3-xlarge w3-right fa fa-plus w3-border-left" style="padding: 7px 4px;" title="Insertar" (click)="sendAction({ name : 'new' })"></button>
+    <button class="w3-button w3-xlarge w3-right fa fa-trash w3-border-left" style="padding: 7px 4px;" title="Eliminar" (click)="sendAction({ name : 'delete' })"></button>
+    <button class="w3-button w3-xlarge w3-right fa fa-edit w3-border-left" style="padding: 9px 4px 5px 4px;" title="Editar" (click)="sendAction({ name : 'edit' })"></button>
+    
+    <button (click)="sendAction({ name : 'last' })" class="w3-button w3-right w3-border-left" style="padding: 8px;">&#10095;&#10095;</button>
+    <button (click)="sendAction({ name : 'next' })" class="w3-button w3-right w3-border-left" style="padding: 8px;">&#10095;</button>
+    <input class="w3-right w3-center" style="width: 3em;padding:8px; border:none" [ngModel]="pagination.page" />
+    <button (click)="sendAction({ name : 'previous' })" class="w3-button w3-right w3-border-left w3-border-right" style="padding: 8px;">&#10094;</button>
+    <button (click)="sendAction({ name : 'first' })" class="w3-button w3-right w3-border-left" style="padding: 8px;">&#10094;&#10094;</button>
+
+  </div>

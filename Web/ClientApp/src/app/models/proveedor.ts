@@ -1,8 +1,8 @@
 
 export interface Proveedor {
-  id: number;
-  nif: string;
-  nombre: string;
-  descripcion: string;  
-  fechaDeAlta: string;
+  _id: number;
+  _nif: string;
+  _nombre: string;
+  _descripcion: string;  
+  _fechaDeAlta: string;
 }
