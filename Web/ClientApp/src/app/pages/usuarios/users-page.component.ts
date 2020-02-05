@@ -1,7 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Usuario } from "../../models/index";
-import { ArrayUtilsService } from "../../services/arrayUtils.service";
+
+import { utils } from '@extensions';
+import { Usuario } from "@app/models/index";
+import { UsuarioService } from '@app/services/api';
 
 @Component({
   selector: 'app-users-page',
@@ -12,19 +14,16 @@ export class UsersPageComponent {
   public usuarios: Usuario[];
   public pagination: { title: string, data: Usuario[], page: number };
 
-  constructor(http: HttpClient,
-              @Inject('BASE_URL') baseUrl: string) {
+  constructor(public apiService: UsuarioService, @Inject('APP_UTILS') public appUtils: UtilsConstructor) {
 
     this.pagination = { title: 'Usuarios', data: [], page: 1 };
 
-    http.get<Usuario[]>(baseUrl + 'api/v1/usuarios')
-        .subscribe(
-          result => {
-            this.usuarios = result;
-            this.pagination.data = result;
-          },
-          error => console.error(error)
-        );
+    apiService.getAll().subscribe(response => {
+      this._sortBy = '_nombre';
+      this.usuarios = response.orderBy(this._sortBy)
+      this.pagination.data = this.usuarios;
+    });
+
   }
 
   private _sortBy = '';
@@ -41,11 +40,14 @@ export class UsersPageComponent {
       this._desc = false;
     }
     this._sortBy = __field;
-    this.usuarios = new ArrayUtilsService<Usuario>(this.usuarios).sortBy(__field, this._desc);
+    this.usuarios.sortBy(__field, this._desc);
   }
 
   doAddToFavorites(sender: HTMLButtonElement) {
-    console.log('Add to favorites');
+    console.log('Current -> Id : {_id}, Nif : {_nif}'.merge(this.usuarios[0]));
+    console.log(this.appUtils.isNumber(5));
+    console.log(this.usuarios.select('_id'));
+    console.log('Add to favorites {0}, {1}'.format(1, 2));
   }
 
   doAction(value: { name: string, data: any }) {

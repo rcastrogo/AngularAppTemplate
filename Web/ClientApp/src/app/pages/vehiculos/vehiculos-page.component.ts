@@ -1,7 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Usuario, Proveedor, Vehiculo } from "../../models/index";
-import { ArrayUtilsService } from "../../services/arrayUtils.service";
+
+import { utils } from '@extensions';
+import { Vehiculo } from "@app/models/index";
+import { VehiculoService } from '@app/services/api/';
 
 @Component({
   selector: 'app-vehiculos-page',
@@ -12,21 +14,18 @@ export class VehiculosPageComponent {
   public vehiculos: Vehiculo[];
   public current: Vehiculo = { _id : 0, _matricula : '', _marca : '', _modelo : '', _fechaDeAlta : ''};
   public dialog: HTMLElement;
-  public pagination: { title: string, data: Vehiculo[], page: number  };
+  public pagination: { title: string, data: Vehiculo[], page: number };
 
-  constructor(public http: HttpClient,
-              @Inject('BASE_URL') public baseUrl: string) {
+  constructor(public apiService: VehiculoService) {
 
     this.pagination = { title: 'Vehículos', data : [], page: 1 };
 
-    http.get<Vehiculo[]>(baseUrl + 'api/v1/vehiculos')
-        .subscribe(
-          result => {
-            this.vehiculos = result;
-            this.pagination.data = result;
-          },
-          error => console.error(error)
-        );
+    apiService.getAll().subscribe(response => {
+      this._sortBy = '_matricula';
+      this.vehiculos = response.orderBy(this._sortBy);
+      this.pagination.data = this.vehiculos;
+    });
+
   }
 
   private _sortBy = '';
@@ -43,11 +42,14 @@ export class VehiculosPageComponent {
       this._desc = false;
     }
     this._sortBy = __field;
-    this.vehiculos = new ArrayUtilsService<Vehiculo>(this.vehiculos).sortBy(__field, this._desc);
+    this.vehiculos = this.vehiculos.sortBy(__field, this._desc);
   }
 
-  doAddToFavorites(sender: HTMLButtonElement) {
-    console.log('Add to favorites');
+  doAddToFavorites(sender: HTMLButtonElement) { 
+    console.log('Current -> Id : {_id}, Matrícula : {_matricula}'.merge(this.current));
+    console.log(utils.isNumber(5));
+    console.log(this.vehiculos.select('_id'));
+    console.log('Add to favorites {0}, {1}'.format(1, 2));
   }
 
   doAction(value: { name: string, data: any }) {
@@ -79,8 +81,9 @@ export class VehiculosPageComponent {
       __dlg.show();
       __dlg.acceptButton.onclick = () => {
         __dlg.close();
-        this.http
-            .delete(this.baseUrl + 'api/v1/vehiculos/' + __targetId)
+
+        this.apiService
+            .delete(__targetId)
             .subscribe(
               result => {
                 this.__remove(__target);
@@ -88,7 +91,8 @@ export class VehiculosPageComponent {
                 __dlg.close();
               },
               error => console.error(error)
-            );
+        );
+
       };
       return;
     }
@@ -103,24 +107,24 @@ export class VehiculosPageComponent {
       __dlg.acceptButton.onclick = () => {
 
         let __payload = {
-          Matricula: (document.getElementById('txt-matricula') as HTMLInputElement).value,
-          Marca: (document.getElementById('txt-marca') as HTMLInputElement).value,
-          Modelo: (document.getElementById('txt-modelo') as HTMLInputElement).value
+          _id: 0,
+          _matricula: (document.getElementById('txt-matricula') as HTMLInputElement).value,
+          _marca: (document.getElementById('txt-marca') as HTMLInputElement).value,
+          _modelo: (document.getElementById('txt-modelo') as HTMLInputElement).value,
+          _fechaDeAlta : ''
         };
 
-        this.http.post(this.baseUrl + 'api/v1/vehiculos',
-                        __payload,
-                        { headers : new HttpHeaders({ 'Content-Type': 'application/json' }) }
-                 )
-                 .subscribe(
-                   result => {
-                     this.current = result as Vehiculo;
-                     this.vehiculos.push(result as Vehiculo);
-                     this.pagination.data = this.vehiculos
-                     __dlg.close();
-                   },
-                   error => console.error(error)
-                 );
+        this.apiService
+            .post(__payload)
+                  .subscribe(
+                    result => {
+                      this.current = result as Vehiculo;
+                      this.vehiculos.push(result as Vehiculo);
+                      this.pagination.data = this.vehiculos
+                      __dlg.close();
+                    },
+                    error => console.error(error)
+                  );
       };
       return;
     }
@@ -142,25 +146,24 @@ export class VehiculosPageComponent {
       __dlg.acceptButton.onclick = () => {
 
         let __payload = {
-          Id        : (document.getElementById('txt-id') as HTMLInputElement).value,
-          Matricula : (document.getElementById('txt-matricula') as HTMLInputElement).value,
-          Marca     : (document.getElementById('txt-marca') as HTMLInputElement).value,
-          Modelo    : (document.getElementById('txt-modelo') as HTMLInputElement).value
+          _id        : ~~(document.getElementById('txt-id') as HTMLInputElement).value,
+          _matricula : (document.getElementById('txt-matricula') as HTMLInputElement).value,
+          _marca     : (document.getElementById('txt-marca') as HTMLInputElement).value,
+          _modelo: (document.getElementById('txt-modelo') as HTMLInputElement).value,
+          _fechaDeAlta : ''
         };
 
-        this.http.put(this.baseUrl + 'api/v1/vehiculos',
-                      __payload,
-                      { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }
-                  )
-                  .subscribe(
-                    result => {                  
-                      this.current._matricula = (result as Vehiculo)._matricula;
-                      this.current._marca = (result as Vehiculo)._marca;
-                      this.current._modelo = (result as Vehiculo)._modelo;
-                      __dlg.close();
-                    },
-                    error => console.error(error)
-                  );
+        this.apiService
+            .put(__payload)
+            .subscribe(
+              result => {                  
+                  this.current._matricula = (result as Vehiculo)._matricula;
+                  this.current._marca = (result as Vehiculo)._marca;
+                  this.current._modelo = (result as Vehiculo)._modelo;
+                  __dlg.close();
+              },
+              error => console.error(error)
+            );
       };
     }
 

@@ -1,7 +1,9 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Usuario, Proveedor } from "../../models/index";
-import { ArrayUtilsService } from "../../services/arrayUtils.service";
+
+import { utils } from '@extensions';
+import { Usuario, Proveedor } from "@app/models/index";
+import { ProveedorService } from '@app/services/api/';
 
 @Component({
   selector: 'app-proveedores-page',
@@ -12,19 +14,16 @@ export class ProveedoresPageComponent {
   public proveedores: Proveedor[];
   public pagination: { title: string, data: Proveedor[], page: number };
 
-  constructor(http: HttpClient,
-              @Inject('BASE_URL') baseUrl: string) {
+  constructor(public apiService: ProveedorService) {
 
     this.pagination = { title: 'Proveedores', data: [], page: 1 };
 
-    http.get<Proveedor[]>(baseUrl + 'api/v1/proveedores')
-        .subscribe(
-          result => {
-            this.proveedores = result;
-            this.pagination.data = result;
-          },
-          error => console.error(error)
-        );
+    apiService.getAll().subscribe(response => {
+      this._sortBy = '_nombre';
+      this.proveedores = response.orderBy(this._sortBy);
+      this.pagination.data = this.proveedores;
+    });
+
   }
 
   private _sortBy = '';
@@ -41,11 +40,14 @@ export class ProveedoresPageComponent {
       this._desc = false;
     }
     this._sortBy = __field;
-    this.proveedores = new ArrayUtilsService<Proveedor>(this.proveedores).sortBy(__field, this._desc);
+    this.proveedores = this.proveedores.sortBy(__field, this._desc);
   }
 
   doAddToFavorites(sender: HTMLButtonElement) {
-    console.log('Add to favorites');
+    console.log('Current -> Id : {_id}, Nif : {_nif}'.merge(this.proveedores[0])); 
+    console.log(utils.isNumber(5));
+    console.log(this.proveedores.select('_id'));
+    console.log('Add to favorites {0}, {1}'.format(1, 2));
   }
 
   doAction(value: { name: string, data: any }) {

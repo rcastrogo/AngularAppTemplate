@@ -12,6 +12,7 @@ import { UsersPageComponent, ProveedoresPageComponent, VehiculosPageComponent } 
 import { AboutComponent } from './about/about.component';
 import { DatePart } from "./pipes/datePart.pipe";
 import { TableHeaderComponent } from './components/table-header/table-header.component';
+import { ProveedorService, VehiculoService, UsuarioService } from './services/api';
 
 
 @NgModule({
@@ -40,7 +41,7 @@ import { TableHeaderComponent } from './components/table-header/table-header.com
       { path: 'vehiculos', component: VehiculosPageComponent }
     ])
   ],
-  providers: [],
+  providers: [ProveedorService, UsuarioService, VehiculoService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
