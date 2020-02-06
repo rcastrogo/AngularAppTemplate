@@ -1,0 +1,68 @@
+
+
+DEFINE hideDetail         = false
+DEFINE hiddenHeaders      = 1
+DEFINE repeatHeader       = 1
+DEFINE repeatHeaderAfter  = 0
+DEFINE tableId            = tbl-rpt0001
+DEFINE detailId           = tbl-rpt0001-d
+DEFINE group01Id          = tbl-rpt0001-nombre
+DEFINE grandTotalId       = tbl-rpt0001-total
+
+DEFINE summary       = { }
+DEFINE orderBy       = _descripcion,_nombre
+
+FUNCTION Iteratefn 
+  
+END
+
+FUNCTION onStartfn
+  //debugger;
+  ctx.fn = {
+    headerG1 : function(key, b){
+      return '<tr class="w3-teal"><td colspan="4">{0}</td></tr>'.format(key);
+    },
+    fixDate : function(value, b){
+      return value.fixDate();
+    }
+  }
+END
+
+# ========================================================
+# Cabecera 1
+# ======================================================== 
+CREATE  header className:report-title
+ADD_COL colspan:4 html:'Listado de proveedores'
+
+# ========================================================
+# Cabecera 2  
+# ======================================================== 
+CREATE  header className:header
+ADD_COL html:'Id' style:width:2em
+ADD_COL html:'Nif' style:width:8em
+ADD_COL html:'Nombre' 
+ADD_COL html:'Fecha de alta' style:width:10em
+
+# ========================================================
+# Detalle
+# ======================================================== 
+CREATE  detail id:@detailId
+ADD_COL xbind:'innerHTML:BS.data._id'
+ADD_COL xbind:'innerHTML:BS.data._nif'
+ADD_COL xbind:'innerHTML:BS.data._nombre'
+ADD_COL xbind:'innerHTML:BS.data._fechaDeAlta BS.fn.fixDate'
+
+# ===========================================================================================
+# Grupo 1 (Marca)
+# ===========================================================================================
+DEFINE  HTML_EJERCICIO = Total empresa
+CREATE  group id:@group01Id className:rpt-total key:_descripcion header:BS.fn.headerG1
+ADD_COL colspan:3 html:@HTML_EJERCICIO style:text-align:right;font-weight:bold
+ADD_COL className:integer xbind:'innerHTML:BS.G1.recordCount'
+
+# ==========================================================================
+# Total Listado
+# ==========================================================================
+CREATE  group id:@grandTotalId className:rpt-total
+ADD_COL colspan:3 html:'Total Listado' style:text-align:right;font-weight:bold
+ADD_COL className:integer xbind:'innerHTML:BS.recordCount'

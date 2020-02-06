@@ -1,21 +1,27 @@
 
-<div class="w3-bar w3-black">
-    <a href="#" class="w3-bar-item w3-button" 
-        [routerLink]='["/"]'
-        [routerLinkActive]='["link-active"]'
-        [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+  <div class="w3-bar w3-black">
     <a href="#" class="w3-bar-item w3-button"
-        [routerLink]='["/counter"]'
-        [routerLinkActive]='["link-active"]'>Contador</a>
+       [routerLink]='["/"]'
+       [routerLinkActive]='["link-active"]'
+       [routerLinkActiveOptions]="{ exact: true }">Inicio</a>
+    <a href="#" class="w3-bar-item w3-button"
+       [routerLink]='["/counter"]'
+       [routerLinkActive]='["link-active"]'>Contador</a>
+
     <div class="w3-dropdown-hover">
-        <button class="w3-button w3-black">Datos</button>
-        <div class="w3-dropdown-content w3-bar-block w3-card-4">
-            <a *ngFor="let item of menuItems" href="#" class="w3-bar-item w3-button w3-black"
-                [routerLink]="item.route"
-                [routerLinkActive]='["link-active"]'>{{item.name}}</a>
-        </div>
+      <button class="w3-button w3-black">Datos</button>
+      <div class="w3-dropdown-content w3-bar-block w3-card-4">
+        <a *ngFor="let item of menuItems" href="#" class="w3-bar-item w3-button w3-black"
+           [routerLink]="item.route"
+           [routerLinkActive]='["link-active"]'>{{item.name}}</a>
+      </div>
     </div>
+
+    <a href="#" class="w3-bar-item w3-button"
+       [routerLink]='["/tabbly-reports"]'
+       [routerLinkActive]='["link-active"]'>Informes</a>
+
     <a href="#" class="w3-bar-item w3-button w3-black w3-right"
-        [routerLink]='["/about"]'
-        [routerLinkActive]='["link-active"]'>?</a>
-</div>
+       [routerLink]='["/about"]'
+       [routerLinkActive]='["link-active"]'>?</a>
+  </div>

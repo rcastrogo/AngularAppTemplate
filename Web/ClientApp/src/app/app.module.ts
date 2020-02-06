@@ -12,7 +12,8 @@ import { UsersPageComponent, ProveedoresPageComponent, VehiculosPageComponent } 
 import { AboutComponent } from './about/about.component';
 import { DatePart } from "./pipes/datePart.pipe";
 import { TableHeaderComponent } from './components/table-header/table-header.component';
-import { ProveedorService, VehiculoService, UsuarioService } from './services/api';
+import { ProveedorService, VehiculoService, UsuarioService, ResourceService } from './services/api';
+import { TabblyReportsPageComponent } from './pages/reports/tabbly-reports-page/tabbly-reports-page.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { ProveedorService, VehiculoService, UsuarioService } from './services/ap
     VehiculosPageComponent,
     AboutComponent,
     DatePart,
-    TableHeaderComponent
+    TableHeaderComponent,
+    TabblyReportsPageComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -38,10 +40,11 @@ import { ProveedorService, VehiculoService, UsuarioService } from './services/ap
       { path: 'about', component: AboutComponent },
       { path: 'usuarios', component: UsersPageComponent },
       { path: 'proveedores', component: ProveedoresPageComponent },
-      { path: 'vehiculos', component: VehiculosPageComponent }
+      { path: 'vehiculos', component: VehiculosPageComponent },
+      { path: 'tabbly-reports', component: TabblyReportsPageComponent }
     ])
   ],
-  providers: [ProveedorService, UsuarioService, VehiculoService],
+  providers: [ProveedorService, UsuarioService, VehiculoService, ResourceService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

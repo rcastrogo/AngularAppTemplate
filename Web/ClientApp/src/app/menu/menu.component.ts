@@ -10,7 +10,7 @@ export class MenuComponent {
   menuItems = [ 
     { route: "/usuarios", name : "Usuarios"} ,
     { route: "/proveedores", name : "proveedores"},
-    { route: "/vehiculos", name : "Vehículos"}
+    { route: "/vehiculos", name: "Vehículos" } 
   ];
 
 
