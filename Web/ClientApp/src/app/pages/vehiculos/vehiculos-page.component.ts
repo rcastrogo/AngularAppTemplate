@@ -1,59 +1,60 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { utils } from '@extensions';
+import { utils, Paginator } from '@extensions';
 import { Vehiculo } from "@app/models/index";
 import { VehiculoService } from '@app/services/api/';
+
+const ROWS_PER_PAGE = 4;
 
 @Component({
   selector: 'app-vehiculos-page',
   templateUrl: './vehiculos-page.component.html'
 })
 export class VehiculosPageComponent {
-
-  public pInfo: { totalItems   : number,
-                  currentPage  : number,
-                  pageSize     : number,
-                  totalPages   : number,
-                  startPage    : number,
-                  endPage      : number,
-                  startIndex   : number,
-                  endIndex     : number,
-                  pages        : number[] };
-
+  
   public vehiculos: Vehiculo[];
-  public current: Vehiculo = { _id : 0, _matricula : '', _marca : '', _modelo : '', _fechaDeAlta : ''};
+  public current: Vehiculo;
+  public paginationInfo: PaginationInfo;
+
   public dialog: HTMLElement;
-  public pagination: { title: string, data: Vehiculo[], page: number };
 
+  // ============================================================================================
+  // Constructor
+  // ============================================================================================
   constructor(public apiService: VehiculoService) {
-
-    this.pagination = { title: 'Vehículos', data : [], page: 1 };
-
+    this.current = { _id : 0, _matricula : '', _marca : '', _modelo : '', _fechaDeAlta : ''};
+    this.vehiculos = [];
+    this.paginationInfo = Paginator.paginate(this.vehiculos, 1, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Vehículos: Cargando datos...';
+    // ==========================================================================================
+    // Carga de datos
+    // ==========================================================================================
     apiService.getAll().subscribe(response => {
       this._sortBy = '_matricula';
       this.vehiculos = response.orderBy(this._sortBy);
-      this.goToPage(1);
+      this.goToPage('first');
     });
 
   }
 
+  // ============================================================================================
+  // Paginación
+  // ============================================================================================
   goToPage(page: string) {
-
-    var p = ~~page;
-
-    if (page === 'first')    p = 1;
-    if (page === 'previous') p = this.pInfo.currentPage - 1;
-    if (page === 'next')     p = this.pInfo.currentPage + 1;
-    if (page === 'last')     p = this.pInfo.totalPages;
-
-    this.pInfo = new Paginator().paginate(this.vehiculos.length, p, 4);
-    this.pagination.data = this.vehiculos.slice(this.pInfo.startIndex, this.pInfo.endIndex + 1);
-    this.pagination.page = this.pInfo.currentPage;
-    this.pagination.title = 'Vehículos: {pInfo.totalItems} elementos'.format(this);
-    console.log(this.pInfo.pages);
+    var __page = ~~page;
+    if (page === 'current')  __page = this.paginationInfo.currentPage;
+    if (page === 'first')    __page = 1;
+    if (page === 'previous') __page = this.paginationInfo.currentPage - 1;
+    if (page === 'next')     __page = this.paginationInfo.currentPage + 1;
+    if (page === 'last')     __page = this.paginationInfo.totalPages;
+    this.paginationInfo = Paginator.paginate(this.vehiculos, __page, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Vehículos: {0} elementos'.format(this.paginationInfo.totalItems)
   }
 
+  // ============================================================================================
+  // Ordenación
+  // ============================================================================================
   private _sortBy = '';
   private _desc = false;
   doSort(mouseEvent) {
@@ -81,13 +82,6 @@ export class VehiculosPageComponent {
 
   doAction(value: { name: string, data: any }) {
 
-    if (value.name === 'first'    ||
-        value.name === 'previous' ||
-        value.name === 'next'     ||
-        value.name === 'last') return this.goToPage(value.name);
-
-    if (value.name === 'check-item') return console.log(value.name);
-
     this.dialog = this.dialog || document.getElementById('vehiculo-edit-dialog');
 
     let __dlg = this.__getDialogWrapper();
@@ -98,7 +92,33 @@ export class VehiculosPageComponent {
       if (sender.target === __dlg.container) __dlg.close();
     }
 
+    // ============================================================================================
+    // Paginación
+    // ============================================================================================
+    if (value.name === 'first'    ||
+        value.name === 'previous' ||
+        value.name === 'next'     ||
+        value.name === 'last') return this.goToPage(value.name);
+    // ============================================================================================
+    // Check/Uncheck
+    // ============================================================================================
+    if (value.name === 'check-item') {
+      let target = this.paginationInfo.visibleItems[value.data];
+      target.__checked = 'true';
+      return console.log(value.name);
+    }
+
+    // ============================================================================================
+    // Borrado
+    // ============================================================================================
     if (value.name === 'delete') {
+
+      let ids = this.vehiculos
+                    .where({ '__checked' : 'true' })
+                    .select('_id');
+      console.log(ids);
+      
+      return;
 
       let __checked  = document.querySelectorAll('tr input:checked')[0];
       let __targetId = ~~(__checked.parentNode.parentNode as HTMLElement).id.split('-')[1];
@@ -108,14 +128,15 @@ export class VehiculosPageComponent {
       __dlg.body.innerHTML = '¿Está seguro de eliminar el vehículo seleccionado?';
       __dlg.show();
       __dlg.acceptButton.onclick = () => {
+
         __dlg.close();
 
         this.apiService
             .delete(__targetId)
             .subscribe(
               result => {
-                this.__remove(__target);
-                this.goToPage(this.pInfo.currentPage);
+                this.vehiculos.remove(__target);
+                this.goToPage('current');
                 __dlg.close();
               },
               error => console.error(error)
@@ -124,7 +145,9 @@ export class VehiculosPageComponent {
       };
       return;
     }
-
+    // ============================================================================================
+    // Nuevo
+    // ============================================================================================
     if (value.name === 'new') {
       this.current = { _id: 0, _matricula: '', _marca: '', _modelo: '', _fechaDeAlta: '' };
       this.dialog.style.display = 'block';
@@ -149,7 +172,7 @@ export class VehiculosPageComponent {
                       this.current = result as Vehiculo;
                       // TODO: sincronizar paginación
                       this.vehiculos.push(result as Vehiculo);
-                      this.pagination.data.push(result as Vehiculo)
+                      this.paginationInfo.visibleItems.push(result as Vehiculo)
 
                       __dlg.close();
                     },
@@ -158,7 +181,9 @@ export class VehiculosPageComponent {
       };
       return;
     }
-
+    // ============================================================================================
+    // Edición
+    // ============================================================================================
     if (value.name === 'edit' || value.name === 'edit-row') {
       this.dialog.style.display = 'block';
       __dlg.title.innerHTML = 'Editar vehículo';
@@ -211,59 +236,5 @@ export class VehiculosPageComponent {
            }
   }
 
-  private __remove(target: Vehiculo) {
-    const index = this.vehiculos.indexOf(target);
-    if (index != -1) this.vehiculos.splice(index, 1);
-  }
-
 }
 
-class Paginator {
-
-  paginate(totalItems: number,
-           currentPage: number = 1,
-           pageSize: number = 10,
-           maxPages: number = 10) {
-
-    let startPage: number, endPage: number;
-    let totalPages = Math.ceil(totalItems / pageSize);
-    if (currentPage < 1) {
-      currentPage = 1;
-    } else if (currentPage > totalPages) {
-      currentPage = totalPages;
-    }
-
-    if (totalPages <= maxPages) {
-      startPage = 1;
-      endPage = totalPages;
-    } else {
-      let maxPagesBeforeCurrentPage = Math.floor(maxPages / 2);
-      let maxPagesAfterCurrentPage = Math.ceil(maxPages / 2) - 1;
-      if (currentPage <= maxPagesBeforeCurrentPage) {
-          startPage = 1;
-          endPage = maxPages;
-      } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
-          startPage = totalPages - maxPages + 1;
-          endPage = totalPages;
-      } else {
-          startPage = currentPage - maxPagesBeforeCurrentPage;
-          endPage = currentPage + maxPagesAfterCurrentPage;
-      }
-    }
-
-    let startIndex = (currentPage - 1) * pageSize;
-    let endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
-
-    return { totalItems   : totalItems,
-             currentPage  : currentPage,
-             pageSize     : pageSize,
-             totalPages   : totalPages,
-             startPage    : startPage,
-             endPage      : endPage,
-             startIndex   : startIndex,
-             endIndex     : endIndex,
-             pages        : Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i)
-           };
-  }
-
-}

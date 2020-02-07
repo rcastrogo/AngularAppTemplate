@@ -1,9 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { utils } from '@extensions';
+import { utils, Paginator } from '@extensions';
 import { Usuario } from "@app/models/index";
 import { UsuarioService } from '@app/services/api';
+
+const ROWS_PER_PAGE = 2;
 
 @Component({
   selector: 'app-users-page',
@@ -12,20 +14,45 @@ import { UsuarioService } from '@app/services/api';
 export class UsersPageComponent {
 
   public usuarios: Usuario[];
-  public pagination: { title: string, data: Usuario[], page: number };
+  public current: Usuario;
+  public paginationInfo: PaginationInfo;
 
+  // ============================================================================================
+  // Constructor
+  // ============================================================================================
   constructor(public apiService: UsuarioService, @Inject('APP_UTILS') public appUtils: UtilsConstructor) {
-
-    this.pagination = { title: 'Usuarios', data: [], page: 1 };
-
+    this.current = { _id : 0, _nif : '', _nombre : '', _descripcion : '', _fechaDeAlta : ''};
+    this.usuarios = [];
+    this.paginationInfo = Paginator.paginate(this.usuarios, 1, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Vehículos: Cargando datos...';
+    // ===============================================
+    // Carga de datos
+    // ===============================================
     apiService.getAll().subscribe(response => {
       this._sortBy = '_nombre';
-      this.usuarios = response.orderBy(this._sortBy)
-      this.pagination.data = this.usuarios;
+      this.usuarios = response.orderBy(this._sortBy);
+      this.goToPage('first');
     });
 
   }
 
+  // ============================================================================================
+  // Paginación
+  // ============================================================================================
+  goToPage(page: string) {
+    var __page = ~~page;
+    if (page === 'current')  __page = this.paginationInfo.currentPage;
+    if (page === 'first')    __page = 1;
+    if (page === 'previous') __page = this.paginationInfo.currentPage - 1;
+    if (page === 'next')     __page = this.paginationInfo.currentPage + 1;
+    if (page === 'last')     __page = this.paginationInfo.totalPages;
+    this.paginationInfo = Paginator.paginate(this.usuarios, __page, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Usuarios: {0} elementos'.format(this.paginationInfo.totalItems)
+  }
+
+  // ============================================================================================
+  // Ordenación
+  // ============================================================================================
   private _sortBy = '';
   private _desc = false;
   doSort(mouseEvent) {
@@ -41,6 +68,7 @@ export class UsersPageComponent {
     }
     this._sortBy = __field;
     this.usuarios.sortBy(__field, this._desc);
+    this.goToPage('first');
   }
 
   doAddToFavorites(sender: HTMLButtonElement) {
@@ -51,6 +79,18 @@ export class UsersPageComponent {
   }
 
   doAction(value: { name: string, data: any }) {
+
+    // ============================================================================================
+    // Paginación
+    // ============================================================================================
+    if (value.name === 'first'    ||
+        value.name === 'previous' ||
+        value.name === 'next'     ||
+        value.name === 'last') return this.goToPage(value.name);
+    // ============================================================================================
+    // Check/Uncheck
+    // ============================================================================================
+    if (value.name === 'check-item') return console.log(value.name);
 
     let __dlg = this.__getDialogWrapper();
     __dlg.title.innerHTML = value.name;
@@ -71,10 +111,6 @@ export class UsersPageComponent {
     if (value.name === 'edit' || value.name === 'edit-row') {
       __dlg.title.innerHTML = 'Editar usuario';
       __dlg.body.innerHTML = 'Modifique los datos del usuario en cuestión y pulse el botón aceptar';
-    }
-    if (value.name === 'check-item') {
-      console.log('check-item');
-      return
     }
     __dlg.show();
   }

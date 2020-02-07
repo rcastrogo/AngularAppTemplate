@@ -4,7 +4,7 @@
   <p>Relación de proveedores de la aplicación</p>
 
   <p *ngIf="!proveedores"><em>Cargando...</em></p>
-  <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
+  <app-table-header [pagination]="paginationInfo" (onAction)="doAction($event)"></app-table-header>
   <table *ngIf="proveedores" class="w3-table-all">
     <thead>
       <tr (click)="doSort($event)">
@@ -17,7 +17,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let proveedor of proveedores" id="row-{{proveedor._id}}">
+      <tr *ngFor="let proveedor of paginationInfo.visibleItems" id="row-{{proveedor._id}}">
         <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
         <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ proveedor._id }}</a></td>
         <td>{{ proveedor._nif }}</td>

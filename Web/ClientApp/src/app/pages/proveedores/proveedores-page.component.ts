@@ -1,9 +1,11 @@
 import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { utils } from '@extensions';
+import { utils, Paginator } from '@extensions';
 import { Usuario, Proveedor } from "@app/models/index";
 import { ProveedorService } from '@app/services/api/';
+
+const ROWS_PER_PAGE = 2;
 
 @Component({
   selector: 'app-proveedores-page',
@@ -12,20 +14,45 @@ import { ProveedorService } from '@app/services/api/';
 export class ProveedoresPageComponent {
 
   public proveedores: Proveedor[];
-  public pagination: { title: string, data: Proveedor[], page: number };
+  public current: Proveedor;
+  public paginationInfo: PaginationInfo;
 
+  // ============================================================================================
+  // Constructor
+  // ============================================================================================
   constructor(public apiService: ProveedorService) {
-
-    this.pagination = { title: 'Proveedores', data: [], page: 1 };
-
+    this.current = { _id : 0, _nif : '', _nombre : '', _descripcion : '', _fechaDeAlta : ''};
+    this.proveedores = [];
+    this.paginationInfo = Paginator.paginate(this.proveedores, 1, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Proveedores: Cargando datos...';
+    // ===============================================
+    // Carga de datos
+    // ===============================================
     apiService.getAll().subscribe(response => {
       this._sortBy = '_nombre';
       this.proveedores = response.orderBy(this._sortBy);
-      this.pagination.data = this.proveedores;
+      this.goToPage('first');
     });
 
   }
 
+  // ============================================================================================
+  // Paginación
+  // ============================================================================================
+  goToPage(page: string) {
+    var __page = ~~page;
+    if (page === 'current')  __page = this.paginationInfo.currentPage;
+    if (page === 'first')    __page = 1;
+    if (page === 'previous') __page = this.paginationInfo.currentPage - 1;
+    if (page === 'next')     __page = this.paginationInfo.currentPage + 1;
+    if (page === 'last')     __page = this.paginationInfo.totalPages;
+    this.paginationInfo = Paginator.paginate(this.proveedores, __page, ROWS_PER_PAGE, '');
+    this.paginationInfo.title = 'Vehículos: {0} elementos'.format(this.paginationInfo.totalItems)
+  }
+
+  // ============================================================================================
+  // Ordenación
+  // ============================================================================================
   private _sortBy = '';
   private _desc   = false;
   doSort(mouseEvent) {
@@ -41,6 +68,7 @@ export class ProveedoresPageComponent {
     }
     this._sortBy = __field;
     this.proveedores = this.proveedores.sortBy(__field, this._desc);
+    this.goToPage('first');
   }
 
   doAddToFavorites(sender: HTMLButtonElement) {
@@ -51,6 +79,19 @@ export class ProveedoresPageComponent {
   }
 
   doAction(value: { name: string, data: any }) {
+
+    // ============================================================================================
+    // Paginación
+    // ============================================================================================
+    if (value.name === 'first'    ||
+        value.name === 'previous' ||
+        value.name === 'next'     ||
+        value.name === 'last') return this.goToPage(value.name);
+    // ============================================================================================
+    // Check/Uncheck
+    // ============================================================================================
+    if (value.name === 'check-item') return console.log(value.name);
+
 
     let __dlg = this.__getDialogWrapper();
     __dlg.title.innerHTML = value.name;

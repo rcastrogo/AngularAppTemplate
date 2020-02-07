@@ -5,7 +5,7 @@
 
   <p *ngIf="!vehiculos"><em>Cargando...</em></p>
 
-  <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
+  <app-table-header [pagination]="paginationInfo" (onAction)="doAction($event)"></app-table-header>
   <table *ngIf="vehiculos" class="w3-table-all">
     <thead>
       <tr (click)="doSort($event)">
@@ -18,8 +18,10 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let vehiculo of pagination.data" id="row-{{vehiculo._id}}">
-        <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
+      <tr *ngFor="let vehiculo of paginationInfo.visibleItems; let i = index" id="row-{{vehiculo._id}}">
+        <td class="w3-border-right">
+          <input type="checkbox" [ngModel]="vehiculo.__checked" (click)="doAction({ name : 'check-item', data : i})" />
+        </td>
         <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ vehiculo._id }}</a></td>
         <td>{{ vehiculo._matricula }}</td>
         <td>{{ vehiculo._marca }}</td>

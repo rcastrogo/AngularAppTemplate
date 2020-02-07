@@ -5,7 +5,7 @@
 
     <p *ngIf="!usuarios"><em>Cargando...</em></p>
 
-    <app-table-header [pagination]="pagination" (onAction)="doAction($event)"></app-table-header>
+    <app-table-header [pagination]="paginationInfo" (onAction)="doAction($event)"></app-table-header>
     <table *ngIf="usuarios" class="w3-table-all">
       <thead>
         <tr (click)="doSort($event)">
@@ -18,7 +18,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let usuario of usuarios" id="row-{{usuario._id}}">
+        <tr *ngFor="let usuario of paginationInfo.visibleItems" id="row-{{usuario._id}}">
           <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
           <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ usuario._id }}</a></td>
           <td>{{ usuario._nif }}</td>

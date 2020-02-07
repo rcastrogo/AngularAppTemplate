@@ -57,3 +57,15 @@ declare interface Array<T> {
   sum(prop : string) : any;
   toDictionary(propName: string, value?: string): object;
 }
+
+declare interface PaginationInfo {
+  totalItems: number,
+  currentPage: number,
+  pageSize: number,
+  totalPages: number,
+  startIndex: number,
+  endIndex: number,
+  allItems: any[],
+  visibleItems: any[],
+  title:string
+};
