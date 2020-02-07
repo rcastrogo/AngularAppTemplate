@@ -11,6 +11,16 @@ import { VehiculoService } from '@app/services/api/';
 })
 export class VehiculosPageComponent {
 
+  public pInfo: { totalItems   : number,
+                  currentPage  : number,
+                  pageSize     : number,
+                  totalPages   : number,
+                  startPage    : number,
+                  endPage      : number,
+                  startIndex   : number,
+                  endIndex     : number,
+                  pages        : number[] };
+
   public vehiculos: Vehiculo[];
   public current: Vehiculo = { _id : 0, _matricula : '', _marca : '', _modelo : '', _fechaDeAlta : ''};
   public dialog: HTMLElement;
@@ -23,9 +33,25 @@ export class VehiculosPageComponent {
     apiService.getAll().subscribe(response => {
       this._sortBy = '_matricula';
       this.vehiculos = response.orderBy(this._sortBy);
-      this.pagination.data = this.vehiculos;
+      this.goToPage(1);
     });
 
+  }
+
+  goToPage(page: string) {
+
+    var p = ~~page;
+
+    if (page === 'first')    p = 1;
+    if (page === 'previous') p = this.pInfo.currentPage - 1;
+    if (page === 'next')     p = this.pInfo.currentPage + 1;
+    if (page === 'last')     p = this.pInfo.totalPages;
+
+    this.pInfo = new Paginator().paginate(this.vehiculos.length, p, 4);
+    this.pagination.data = this.vehiculos.slice(this.pInfo.startIndex, this.pInfo.endIndex + 1);
+    this.pagination.page = this.pInfo.currentPage;
+    this.pagination.title = 'Vehículos: {pInfo.totalItems} elementos'.format(this);
+    console.log(this.pInfo.pages);
   }
 
   private _sortBy = '';
@@ -43,6 +69,7 @@ export class VehiculosPageComponent {
     }
     this._sortBy = __field;
     this.vehiculos = this.vehiculos.sortBy(__field, this._desc);
+    this.goToPage('first');
   }
 
   doAddToFavorites(sender: HTMLButtonElement) { 
@@ -54,11 +81,12 @@ export class VehiculosPageComponent {
 
   doAction(value: { name: string, data: any }) {
 
-    if (value.name === 'last'     ||
-        value.name === 'next'     ||
+    if (value.name === 'first'    ||
         value.name === 'previous' ||
-        value.name === 'first'    ||
-        value.name === 'check-item') return console.log(value.name);
+        value.name === 'next'     ||
+        value.name === 'last') return this.goToPage(value.name);
+
+    if (value.name === 'check-item') return console.log(value.name);
 
     this.dialog = this.dialog || document.getElementById('vehiculo-edit-dialog');
 
@@ -87,7 +115,7 @@ export class VehiculosPageComponent {
             .subscribe(
               result => {
                 this.__remove(__target);
-                this.pagination.data = this.vehiculos
+                this.goToPage(this.pInfo.currentPage);
                 __dlg.close();
               },
               error => console.error(error)
@@ -119,8 +147,10 @@ export class VehiculosPageComponent {
                   .subscribe(
                     result => {
                       this.current = result as Vehiculo;
+                      // TODO: sincronizar paginación
                       this.vehiculos.push(result as Vehiculo);
-                      this.pagination.data = this.vehiculos
+                      this.pagination.data.push(result as Vehiculo)
+
                       __dlg.close();
                     },
                     error => console.error(error)
@@ -184,6 +214,56 @@ export class VehiculosPageComponent {
   private __remove(target: Vehiculo) {
     const index = this.vehiculos.indexOf(target);
     if (index != -1) this.vehiculos.splice(index, 1);
+  }
+
+}
+
+class Paginator {
+
+  paginate(totalItems: number,
+           currentPage: number = 1,
+           pageSize: number = 10,
+           maxPages: number = 10) {
+
+    let startPage: number, endPage: number;
+    let totalPages = Math.ceil(totalItems / pageSize);
+    if (currentPage < 1) {
+      currentPage = 1;
+    } else if (currentPage > totalPages) {
+      currentPage = totalPages;
+    }
+
+    if (totalPages <= maxPages) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      let maxPagesBeforeCurrentPage = Math.floor(maxPages / 2);
+      let maxPagesAfterCurrentPage = Math.ceil(maxPages / 2) - 1;
+      if (currentPage <= maxPagesBeforeCurrentPage) {
+          startPage = 1;
+          endPage = maxPages;
+      } else if (currentPage + maxPagesAfterCurrentPage >= totalPages) {
+          startPage = totalPages - maxPages + 1;
+          endPage = totalPages;
+      } else {
+          startPage = currentPage - maxPagesBeforeCurrentPage;
+          endPage = currentPage + maxPagesAfterCurrentPage;
+      }
+    }
+
+    let startIndex = (currentPage - 1) * pageSize;
+    let endIndex = Math.min(startIndex + pageSize - 1, totalItems - 1);
+
+    return { totalItems   : totalItems,
+             currentPage  : currentPage,
+             pageSize     : pageSize,
+             totalPages   : totalPages,
+             startPage    : startPage,
+             endPage      : endPage,
+             startIndex   : startIndex,
+             endIndex     : endIndex,
+             pages        : Array.from(Array((endPage + 1) - startPage).keys()).map(i => startPage + i)
+           };
   }
 
 }

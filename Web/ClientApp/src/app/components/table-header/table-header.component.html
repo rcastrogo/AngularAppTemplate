@@ -1,7 +1,7 @@
 
   <div class="w3-bar w3-border-top w3-border-left w3-border-right">
 
-    <span class="w3-left" style="padding:6px 0 4px 8px;">{{pagination.title}}: {{pagination.data.length}} elementos</span>
+    <span class="w3-left" style="padding:6px 0 4px 8px;">{{pagination.title}}</span> 
 
     <button class="w3-button w3-xlarge w3-right fa fa-plus w3-border-left" style="padding: 7px 4px;" title="Insertar" (click)="sendAction({ name : 'new', data : {} })"></button>
     <button class="w3-button w3-xlarge w3-right fa fa-trash w3-border-left" style="padding: 7px 4px;" title="Eliminar" (click)="sendAction({ name : 'delete', data : {} })"></button>

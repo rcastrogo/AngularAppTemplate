@@ -28,6 +28,17 @@ FUNCTION onStartfn
   }
 END
 
+FUNCTION onEndfn
+  var __sum    = ctx.data.sum('_id')
+  var __result = {};
+  ctx.data.toGroupWrapper(__result)('_marca', '_id', 'marcas')
+                                   ('_modelo', '_id', 'modelos');
+  console.log(__sum);
+  console.log(__result);
+  ctx.container.appendChild(ctx.utils.$$('pre', { className : 'w3-container w3-black',
+                                                  textContent : JSON.stringify(__result, null, 1) }));
+END
+
 # ========================================================
 # Cabecera 1
 # ======================================================== 

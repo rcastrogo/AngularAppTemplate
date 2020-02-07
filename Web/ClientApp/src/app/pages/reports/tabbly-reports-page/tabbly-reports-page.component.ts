@@ -15,6 +15,7 @@ import { VehiculoService,
 export class TabblyReportsPageComponent implements OnInit {
 
   private _tabblyService: TabblyService;
+
   constructor(public vehiculosApiService: VehiculoService,
               public usuariosApiService: UsuarioService,
               public proveedoresApiService: ProveedorService,
@@ -69,11 +70,14 @@ export class TabblyReportsPageComponent implements OnInit {
     this.resourceService
         .getResource('tabbly-reports/veh-0001.txt')
         .subscribe(result => {
-           var __rd  = this._tabblyService.parse(result);
+          var __rd  = this._tabblyService.parse(result);
           this.vehiculosApiService.getAll().subscribe(
             data => {
               this._tabblyService.fromReportDefinition(__rd, data, (html: string) => {       
                 __container.innerHTML = html;
+                if(__rd.context.onEndfn) __rd.context.onEndfn({ data      : data,
+                                                                container : __container,
+                                                                utils     : utils });  
               });
             })
         });
@@ -81,3 +85,4 @@ export class TabblyReportsPageComponent implements OnInit {
   }
 
 }
+

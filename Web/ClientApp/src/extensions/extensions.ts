@@ -233,6 +233,7 @@ Array.prototype.distinct = function(sentence = '') {
   });
   return r;
 }
+
 Array.prototype.groupBy = function(prop : string) : object{
   return this.reduce(function(groups : object, item : any) {
     var val = item[prop];
@@ -240,6 +241,26 @@ Array.prototype.groupBy = function(prop : string) : object{
     return groups;
   }, {});
 }
+
+Array.prototype.toGroupWrapper = function(ctx: any){
+	  var dataSet = this;
+	  var __f = function(k, t, name){
+      ctx[name] = {};
+	    dataSet.distinct( function(v){ return v[k]; })	            
+	           .forEach ( function(v){
+               ctx[name][v] = dataSet.reduce( function(p, c, i, a){
+                 return (c[k]==v) ? p + c[t] : p;
+               }, 0.0);
+             });
+      return __f;	           
+	  }
+	  return __f;
+	}
+
+Array.prototype.sum = function (prop: string) {
+  return this.reduce(function (a, item) { return a + item[prop]; }, 0.0);
+}
+
 Array.prototype.toDictionary = function(prop : string, value? : string) : object{
   return this.reduce(function(a, d){
                       a[d[prop]] = value ? d[value] : d;

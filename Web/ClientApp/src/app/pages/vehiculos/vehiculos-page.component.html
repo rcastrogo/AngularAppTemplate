@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let vehiculo of vehiculos" id="row-{{vehiculo._id}}">
+      <tr *ngFor="let vehiculo of pagination.data" id="row-{{vehiculo._id}}">
         <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
         <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ vehiculo._id }}</a></td>
         <td>{{ vehiculo._matricula }}</td>

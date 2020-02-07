@@ -53,5 +53,7 @@ declare interface Array<T> {
   orderBy(sentence: string | Function): T[];
   distinct(sentence: string | Function): T[];
   groupBy(propName: string): object;
+  toGroupWrapper(context : string) : (g: string, prop: string, name: string) => any;
+  sum(prop : string) : any;
   toDictionary(propName: string, value?: string): object;
 }

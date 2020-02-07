@@ -422,18 +422,4 @@ export class TabblyService {
     }
   }
 
-  private module_ReportEngine_Compute = function (d, t) {
-    return d.reduce(function (p, c) { return p + c[t]; }, 0.0);
-  }
-
-  private module_ReportEngine_Group = function (a, c) {
-    var dataSet = a, ctx = c;
-    var __f = function (k, t) {
-      dataSet.distinct(function (v) { return v[k]; })
-        .forEach(function (v) { c[v] = dataSet.reduce(function (p, c, i, a) { return (c[k] == v) ? p + c[t] : p; }, 0.0); });
-      return __f;
-    }
-    return __f;
-  }
-
 }
