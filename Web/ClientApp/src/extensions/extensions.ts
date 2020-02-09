@@ -181,10 +181,14 @@ Array.prototype.where    = function(sentence){
   if (utils.isFunction(sentence)) return this.filter(sentence);
   if (utils.isObject(sentence)){
     return this.filter(new Function('a', Object.keys(sentence)
-                                               .reduce(function(a, p, i){
+                                               .reduce(function(a, propname, i){
                                                          return a + (i > 0 ? ' && ' : '')
-                                                                  + ((sentence[p] instanceof RegExp) ? '{1}.test(a.{0})'.format(p, sentence[p])
-                                                                                                     : 'a.{0} == \'{1}\''.format(p, sentence[p]));                                         
+                                                                  +  (function(){
+                                                                       var __value = sentence[propname];
+                                                                       if(__value instanceof RegExp) return '{1}.test(a.{0})'.format(propname, __value);
+                                                                       if(utils.isString(__value)) return 'a.{0} === \'{1}\''.format(propname, __value);
+                                                                       return 'a.{0} === {1}'.format(propname, __value);
+                                                                      }());                                        
                                                        }, 'return ')));
   }
   return this;
@@ -294,7 +298,56 @@ export class Paginator {
              endIndex     : endIndex,
              allItems     : data,
              visibleItems : data.slice(startIndex, endIndex + 1),
-             title        : title };
+             title        : title,
+             getChecked : () => data.where({ '__checked' : true })
+                                    .map( (item, i) => {
+                                      return { index : data.indexOf(item),
+                                               item  : item }
+                                    })
+    }
+  }
+}
+
+export class DialogHelper {
+
+  container: HTMLElement;
+
+  constructor() {
+
+  }
+
+  public getDialogWrapper(id: string) : any {
+    let __container = document.getElementById(id);
+    let __dlg = { container   : __container,
+                  title       : __container.querySelector('.js-title'),
+                  body        : __container.querySelector('.js-content'),
+                  closeButton : <HTMLButtonElement>__container.querySelector('.js-close-button'),
+                  acceptButton: <HTMLButtonElement>__container.querySelector('.js-accept-button'),
+                  close : function(){ __container.style.display = 'none'; },
+                  show  : function(onConfirm?: (dlg:any) => any){
+                    if (onConfirm) {
+                      __dlg.acceptButton.onclick = () => {
+                        onConfirm(__dlg);
+                      };
+                    }
+                    __container.style.display = 'block';
+                  },
+                  setTitle: (title:string) => {
+                    __dlg.title.innerHTML = title;
+                    return __dlg;
+                  },
+                  setBody: (content:string | HTMLElement) => {
+                    if ((content as HTMLElement).tagName) {
+                      __dlg.body.appendChild(content as HTMLElement);
+                    }else{
+                      __dlg.body.innerHTML = content as string;
+                    }
+                    return __dlg;
+                  }
+                };
+    __dlg.closeButton.onclick = __dlg.close;
+    __dlg.container.onclick   = (sender) => { if (sender.target === __dlg.container) __dlg.close(); }
+    return __dlg;
   }
 
 }

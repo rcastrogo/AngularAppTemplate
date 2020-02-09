@@ -22,7 +22,7 @@
         <td class="w3-border-right">
           <input type="checkbox" [ngModel]="vehiculo.__checked" (click)="doAction({ name : 'check-item', data : i})" />
         </td>
-        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ vehiculo._id }}</a></td>
+        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : vehiculo._id })">{{ vehiculo._id }}</a></td>
         <td>{{ vehiculo._matricula }}</td>
         <td>{{ vehiculo._marca }}</td>
         <td>{{ vehiculo._modelo }}</td>
@@ -45,10 +45,6 @@
   <input id="txt-marca" type="text" class="w3-input w3-border w3-round" [ngModel]="current._marca" [ngModelOptions]="{standalone: true}" /><br />
   <label for="txt-modelo">Modelo</label>
   <input id="txt-modelo" type="text" class="w3-input w3-border w3-round" [ngModel]="current._modelo" [ngModelOptions]="{standalone: true}" /><br />
-
-  <input class="w3-check" type="checkbox" checked="checked">
-  <label>Aire acondicionado</label>
-
 </form>
 
 

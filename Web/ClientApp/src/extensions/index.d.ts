@@ -67,5 +67,6 @@ declare interface PaginationInfo {
   endIndex: number,
   allItems: any[],
   visibleItems: any[],
-  title:string
-};
+  title:string,
+  getChecked: () => any[]
+}
