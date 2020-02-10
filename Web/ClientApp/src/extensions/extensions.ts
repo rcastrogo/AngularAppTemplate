@@ -310,10 +310,7 @@ export class Paginator {
 
 export class DialogHelper {
 
-  container: HTMLElement;
-
   constructor() {
-
   }
 
   public getDialogWrapper(id: string) : any {
@@ -338,13 +335,19 @@ export class DialogHelper {
                   },
                   setBody: (content:string | HTMLElement) => {
                     if ((content as HTMLElement).tagName) {
+                      __dlg.body.innerHTML = '';
                       __dlg.body.appendChild(content as HTMLElement);
                     }else{
                       __dlg.body.innerHTML = content as string;
                     }
                     return __dlg;
+                  },
+                  disableClickOutside: () => {
+                    __dlg.container.onclick = () => {};
+                    return __dlg;
                   }
                 };
+    __dlg.acceptButton.onclick = __dlg.close;
     __dlg.closeButton.onclick = __dlg.close;
     __dlg.container.onclick   = (sender) => { if (sender.target === __dlg.container) __dlg.close(); }
     return __dlg;

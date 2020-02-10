@@ -19,4 +19,13 @@ export class TableHeaderComponent implements OnInit {
     this.onAction.emit(action);
   }
 
+  public goToPage(sender: HTMLInputElement) {
+    console.log(sender.value);
+    let __page = sender.value;
+    this.sendAction( { name : 'page', data : __page});
+  }
+
+  public search(sender: HTMLInputElement) {
+    this.sendAction( { name : 'search', data : sender.value});  
+  }
 }

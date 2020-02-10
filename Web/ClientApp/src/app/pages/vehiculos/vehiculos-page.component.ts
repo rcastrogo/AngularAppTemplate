@@ -5,7 +5,7 @@ import { utils, Paginator, DialogHelper } from '@extensions';
 import { Vehiculo } from "@app/models/index";
 import { VehiculoService } from '@app/services/api/';
 
-const ROWS_PER_PAGE = 4;
+const ROWS_PER_PAGE = 5;
 
 @Component({
   selector: 'app-vehiculos-page',
@@ -17,18 +17,24 @@ export class VehiculosPageComponent {
   public current: Vehiculo;
   public paginationInfo: PaginationInfo;
     
-  // ============================================================================================
+  // ==========================================================================================
   // Constructor
-  // ============================================================================================
+  // ==========================================================================================
   constructor(public apiService: VehiculoService) {
     this.current = { _id : 0, _matricula : '', _marca : '', _modelo : '', _fechaDeAlta : ''};
     this.vehiculos = [];
     this.paginationInfo = Paginator.paginate(this.vehiculos, 1, ROWS_PER_PAGE, '');
     this.paginationInfo.title = 'Vehículos: Cargando datos...';
-    // ==========================================================================================
-    // Carga de datos
-    // ==========================================================================================
-    apiService.getAll().subscribe(response => {
+    this.loadData();
+  }
+
+  // ==========================================================================================
+  // Carga de datos
+  // ==========================================================================================
+  loadData() {
+    this.apiService
+        .getAll()
+        .subscribe(response => {
       this._sortBy = '_matricula';
       this.vehiculos = response.orderBy(this._sortBy);
       this.goToPage('first');
@@ -46,7 +52,27 @@ export class VehiculosPageComponent {
     if (page === 'next')     __page = this.paginationInfo.currentPage + 1;
     if (page === 'last')     __page = this.paginationInfo.totalPages;
     this.paginationInfo = Paginator.paginate(this.vehiculos, __page, ROWS_PER_PAGE, '');
-    this.paginationInfo.title = 'Vehículos: {0} elementos'.format(this.paginationInfo.totalItems)
+    this.syncTitle();
+  }
+
+  syncTitle() {
+    let __total      = this.paginationInfo.totalItems
+    let __selected   = this.paginationInfo.getChecked().length;
+    let __template   = 'Vehículos: {0} elementos'.format(__total);
+    let __template_s = ' ({0} seleccionados)'.format(__selected);
+    if (__selected) {
+      this.paginationInfo.title = __template + __template_s;
+    } else {
+      this.paginationInfo.title = __template;
+    }
+  }
+
+  goToPageOf(target: Vehiculo) {
+    let __index = this.vehiculos.indexOf(target);
+    if (__index > -1) {
+      let __page = Math.floor(__index / this.paginationInfo.pageSize);
+      this.goToPage((__page + 1).toString());
+    }
   }
 
   // ============================================================================================
@@ -86,10 +112,10 @@ export class VehiculosPageComponent {
 
     if(__checkedItems.length == 0) return;
 
-    let __target = <Vehiculo>__checkedItems[0];
+    let __target = <Vehiculo>__checkedItems[0].item;
 
     let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
-                                  .setTitle('Borrar vehículo')
+                                  .setTitle('Borrado de vehículos')
                                   .setBody ('¿Está seguro de eliminar el vehículo seleccionado?')
                                   .show((dlg) => {
                                     this.apiService
@@ -98,7 +124,7 @@ export class VehiculosPageComponent {
                                           this.vehiculos.remove(__target);
                                           this.goToPage('current');
                                         },
-                                        error => console.error(error)
+                                        error => this.showError(error)
                                     );
                                     dlg.close();
                                   });
@@ -113,9 +139,10 @@ export class VehiculosPageComponent {
     this._dialog = this._dialog || <HTMLInputElement>utils.$('vehiculo-edit-dialog');
     this.current = { _id: 0, _matricula: '', _marca: '', _modelo: '', _fechaDeAlta: '' };
 
-    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')
                                   .setTitle('Nuevo vehículo')
                                   .setBody(this._dialog)
+                                  .disableClickOutside()
                                   .show((dlg) => {
   
                                     let __payload = {
@@ -134,12 +161,10 @@ export class VehiculosPageComponent {
                                           this.paginationInfo.visibleItems.push(result)
                                           this._dialog.style.display = 'none';
                                           dlg.close();                                        
-                                          // TODO: sincronizar paginación
                                           this.vehiculos = this.vehiculos.sortBy(this._sortBy, this._desc);
-                                          let __page = this.vehiculos.indexOf(result) / this.paginationInfo.pageSize;
-                                          this.goToPage('' + __page);
+                                          this.goToPageOf(result);
                                         },
-                                        error => console.error(error)
+                                        error => this.showError(error)
                                         );
                                   });
     
@@ -157,6 +182,7 @@ export class VehiculosPageComponent {
     let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
                                   .setTitle('Edición de vehículos')
                                   .setBody(this._dialog)
+                                  .disableClickOutside()
                                   .show((dlg) => {
  
                                     let __payload = {
@@ -176,7 +202,7 @@ export class VehiculosPageComponent {
                                           this._dialog.style.display = 'none';
                                           dlg.close();                                          
                                         },
-                                          error => console.error(error)
+                                          error => this.showError(error)
                                         );
                                   });
     this._dialog.style.display = 'block';
@@ -190,6 +216,7 @@ export class VehiculosPageComponent {
     // =========================================================
     // Paginación
     // =========================================================
+    if (value.name === 'page') return this.goToPage(value.data);
     if (value.name === 'first'    ||
         value.name === 'previous' ||
         value.name === 'next'     ||
@@ -200,6 +227,7 @@ export class VehiculosPageComponent {
     if (value.name === 'check-item') {
       let target = this.paginationInfo.visibleItems[value.data];
       target.__checked = !target.__checked;
+      this.syncTitle();
     }
     // =========================================================
     // Borrado
@@ -224,8 +252,31 @@ export class VehiculosPageComponent {
       let __id = ~~value.data;
       let __target = this.vehiculos.where({ _id : __id })[0];
       return this.edit(__target);
-    } 
+    }
+    // =========================================================
+    // Buscar
+    // =========================================================
+    if (value.name === 'search'){
+      if (value.data) {
+        this.vehiculos = this.vehiculos.where( v => v._marca
+                                                     .toLowerCase()
+                                                     .includes(value.data.toLowerCase()));
+        return this.goToPage('first');
+      }
+      return this.loadData();
+    }
+
   }
+
+  showError(error: any) {
+
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
+                                  .setTitle('Error')
+                                  .setBody (error.message)
+                                  .show();
+    console.error(error); 
+  }
+
 
 }
 

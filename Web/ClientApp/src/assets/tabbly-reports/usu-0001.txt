@@ -6,11 +6,11 @@ DEFINE repeatHeader       = 1
 DEFINE repeatHeaderAfter  = 0
 DEFINE tableId            = tbl-rpt0001
 DEFINE detailId           = tbl-rpt0001-d
-DEFINE group01Id          = tbl-rpt0001-nombre
+DEFINE group01Id          = tbl-rpt0001-descripcion
 DEFINE grandTotalId       = tbl-rpt0001-total
 
 DEFINE summary       = { }
-DEFINE orderBy       = _nombre,_nif
+DEFINE orderBy       = _descripcion,_nif
 
 FUNCTION Iteratefn 
   
@@ -38,9 +38,9 @@ ADD_COL colspan:4 html:'Listado de usuarios'
 # Cabecera 2  
 # ======================================================== 
 CREATE  header className:header
-ADD_COL html:'Id'
-ADD_COL html:'Nif'
-ADD_COL html:'Descripción' style:width:8em
+ADD_COL html:'Id' style:width:8em
+ADD_COL html:'Nif' style:width:8em
+ADD_COL html:'Nombre' 
 ADD_COL html:'Fecha de alta' style:width:10em
 
 # ========================================================
@@ -49,20 +49,20 @@ ADD_COL html:'Fecha de alta' style:width:10em
 CREATE  detail id:@detailId
 ADD_COL xbind:'innerHTML:BS.data._id'
 ADD_COL xbind:'innerHTML:BS.data._nif'
-ADD_COL xbind:'innerHTML:BS.data._descripcion'
+ADD_COL xbind:'innerHTML:BS.data._nombre'
 ADD_COL xbind:'innerHTML:BS.data._fechaDeAlta BS.fn.fixDate'
 
 # ===========================================================================================
 # Grupo 1 (Marca)
 # ===========================================================================================
-DEFINE  HTML_EJERCICIO = Total nombre
-CREATE  group id:@group01Id className:rpt-total key:_nombre header:BS.fn.headerG1
+DEFINE  HTML_EJERCICIO = Usuarios en el grupo
+CREATE  group id:@group01Id className:rpt-total key:_descripcion header:BS.fn.headerG1
 ADD_COL colspan:3 html:@HTML_EJERCICIO style:text-align:right;font-weight:bold
-ADD_COL className:integer xbind:'innerHTML:BS.G1.recordCount'
+ADD_COL xbind:'innerHTML:BS.G1.recordCount' style:text-align:center;font-weight:bold
 
 # ==========================================================================
 # Total Listado
 # ==========================================================================
 CREATE  group id:@grandTotalId className:rpt-total
 ADD_COL colspan:3 html:'Total Listado' style:text-align:right;font-weight:bold
-ADD_COL className:integer xbind:'innerHTML:BS.recordCount'
+ADD_COL className:integer xbind:'innerHTML:BS.recordCount' style:text-align:center;font-weight:bold

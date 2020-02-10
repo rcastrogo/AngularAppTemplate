@@ -17,9 +17,11 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let proveedor of paginationInfo.visibleItems" id="row-{{proveedor._id}}">
-        <td class="w3-border-right"><input type="checkbox" (click)="doAction({ name : 'check-item', data : $event})" /></td>
-        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : $event })">{{ proveedor._id }}</a></td>
+      <tr *ngFor="let proveedor of paginationInfo.visibleItems; let i = index" id="row-{{proveedor._id}}">
+        <td class="w3-border-right">
+          <input type="checkbox" [ngModel]="proveedor.__checked" (click)="doAction({ name : 'check-item', data : i})" />
+        </td>
+        <td><a [routerLink]="" (click)="doAction({ name : 'edit-row', data : proveedor._id })">{{ proveedor._id }}</a></td>
         <td>{{ proveedor._nif }}</td>
         <td>{{ proveedor._nombre }}</td>
         <td>{{ proveedor._descripcion }}</td>
@@ -33,6 +35,16 @@
 
 </div>
 
+<form id="proveedor-edit-dialog" class="" style="display:none">
+  <label for="txt-id">Id</label>
+  <input id="txt-id" type="text" class="w3-input w3-border w3-round" readonly [ngModel]="current._id" [ngModelOptions]="{standalone: true}" /><br />
+  <label for="txt-nif">Nif</label>
+  <input id="txt-nif" type="text" class="w3-input w3-border w3-round" [ngModel]="current._nif" [ngModelOptions]="{standalone: true}" /><br />
 
+  <label for="txt-nombre">Nombre</label>
+  <input id="txt-nombre" type="text" class="w3-input w3-border w3-round" [ngModel]="current._nombre" [ngModelOptions]="{standalone: true}" /><br />
+  <label for="txt-descripcion">Descripción</label>
+  <input id="txt-descripcion" type="text" class="w3-input w3-border w3-round" [ngModel]="current._descripcion" [ngModelOptions]="{standalone: true}" /><br />
+</form>
 
 

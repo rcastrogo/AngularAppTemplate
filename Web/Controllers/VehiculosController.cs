@@ -1,12 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
 using Dal.Core;
-using Negocio.Entities;
-using Negocio;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Negocio;
+using Negocio.Entities;
+using System;
+
 
 namespace Controllers
 {
@@ -74,5 +72,6 @@ namespace Controllers
         }
       }
     }
+
   }
 }

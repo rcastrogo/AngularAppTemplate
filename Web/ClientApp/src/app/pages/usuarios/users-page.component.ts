@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
-import { utils, Paginator } from '@extensions';
+import { utils, Paginator, DialogHelper } from '@extensions';
 import { Usuario } from "@app/models/index";
 import { UsuarioService } from '@app/services/api';
 
@@ -24,16 +24,21 @@ export class UsersPageComponent {
     this.current = { _id : 0, _nif : '', _nombre : '', _descripcion : '', _fechaDeAlta : ''};
     this.usuarios = [];
     this.paginationInfo = Paginator.paginate(this.usuarios, 1, ROWS_PER_PAGE, '');
-    this.paginationInfo.title = 'Vehículos: Cargando datos...';
-    // ===============================================
-    // Carga de datos
-    // ===============================================
-    apiService.getAll().subscribe(response => {
+    this.paginationInfo.title = 'Usuarios: Cargando datos...';
+    this.loadData();
+  }
+
+  // ============================================================================================
+  // Carga de datos
+  // ============================================================================================
+  loadData() {
+    this.apiService
+        .getAll()
+        .subscribe(response => {
       this._sortBy = '_nombre';
       this.usuarios = response.orderBy(this._sortBy);
       this.goToPage('first');
     });
-
   }
 
   // ============================================================================================
@@ -47,7 +52,27 @@ export class UsersPageComponent {
     if (page === 'next')     __page = this.paginationInfo.currentPage + 1;
     if (page === 'last')     __page = this.paginationInfo.totalPages;
     this.paginationInfo = Paginator.paginate(this.usuarios, __page, ROWS_PER_PAGE, '');
-    this.paginationInfo.title = 'Usuarios: {0} elementos'.format(this.paginationInfo.totalItems)
+    this.syncTitle();
+  }
+
+  syncTitle() {
+    let __total      = this.paginationInfo.totalItems
+    let __selected   = this.paginationInfo.getChecked().length;
+    let __template   = 'Usuarios: {0} elementos'.format(__total);
+    let __template_s = ' ({0} seleccionados)'.format(__selected);
+    if (__selected) {
+      this.paginationInfo.title = __template + __template_s;
+    } else {
+      this.paginationInfo.title = __template;
+    }
+  }
+
+  goToPageOf(target: Usuario) {
+    let __index = this.usuarios.indexOf(target);
+    if (__index > -1) {
+      let __page = Math.floor(__index / this.paginationInfo.pageSize);
+      this.goToPage((__page + 1).toString());
+    }
   }
 
   // ============================================================================================
@@ -78,54 +103,177 @@ export class UsersPageComponent {
     console.log('Add to favorites {0}, {1}'.format(1, 2));
   }
 
-  doAction(value: { name: string, data: any }) {
+  // ============================================================================================
+  // Borrado de elementos
+  // ============================================================================================
+  private delete() {
 
-    // ============================================================================================
+    let __checkedItems = this.paginationInfo.getChecked();
+
+    if(__checkedItems.length == 0) return;
+
+    let __target = <Usuario>__checkedItems[0].item;
+
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
+                                  .setTitle('Borrado de usuarios')
+                                  .setBody ('¿Está seguro de eliminar el usuario seleccionado?')
+                                  .show((dlg) => {
+                                    this.apiService
+                                        .delete(__target._id)
+                                        .subscribe((result: Usuario) => {
+                                          this.usuarios.remove(__target);
+                                          this.goToPage('current');
+                                        },
+                                        error => this.showError(error)
+                                    );
+                                    dlg.close();
+                                  });
+  };
+
+  // ============================================================================================
+  // Inserción de elementos
+  // ============================================================================================
+  private _dialog: HTMLElement;
+  private insert() {
+
+    this._dialog = this._dialog || <HTMLInputElement>utils.$('usuario-edit-dialog');
+    this.current = { _id: 0, _nif: '', _nombre: '', _descripcion: '', _fechaDeAlta: '' };
+
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')
+                                  .setTitle('Nuevo usuario')
+                                  .setBody(this._dialog)
+                                  .disableClickOutside()
+                                  .show((dlg) => {
+  
+                                    let __payload = {
+                                      _id          : 0,
+                                      _nif         : (<HTMLInputElement>utils.$('txt-nif')).value,
+                                      _nombre      : (<HTMLInputElement>utils.$('txt-nombre')).value,
+                                      _descripcion : (<HTMLInputElement>utils.$('txt-descripcion')).value,
+                                      _fechaDeAlta : ''
+                                    };
+
+                                    this.apiService
+                                        .post(__payload)
+                                        .subscribe((result: Usuario) => {
+                                          this.current = result;
+                                          this.usuarios.push(result);
+                                          this.paginationInfo.visibleItems.push(result)
+                                          this._dialog.style.display = 'none';
+                                          dlg.close();                                        
+                                          this.usuarios = this.usuarios.sortBy(this._sortBy, this._desc);
+                                          this.goToPageOf(result);
+                                        },
+                                        error => this.showError(error)
+                                        );
+                                  });
+    
+    this._dialog.style.display = 'block';
+  }
+
+  // ============================================================================================
+  // Edición de elementos
+  // ============================================================================================
+  private edit(target: Usuario) {
+
+    this._dialog = this._dialog || <HTMLInputElement>utils.$('usuario-edit-dialog');
+    this.current = target;
+
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
+                                  .setTitle('Edición de usuarios')
+                                  .setBody(this._dialog)
+                                  .disableClickOutside()
+                                  .show((dlg) => {
+ 
+                                    let __payload = {
+                                      _id          : ~~(<HTMLInputElement>utils.$('txt-id')).value,
+                                      _nif         : (<HTMLInputElement>utils.$('txt-nif')).value,
+                                      _nombre      : (<HTMLInputElement>utils.$('txt-nombre')).value,
+                                      _descripcion : (<HTMLInputElement>utils.$('txt-descripcion')).value,
+                                      _fechaDeAlta : ''
+                                    };
+
+                                    this.apiService
+                                        .put(__payload)
+                                        .subscribe((result: Usuario) => {
+                                          this.current._nif = result._nif;
+                                          this.current._nombre = result._nombre;
+                                          this.current._descripcion = result._descripcion;
+                                          this._dialog.style.display = 'none';
+                                          dlg.close();                                          
+                                        },
+                                          error => this.showError(error)
+                                        );
+                                  });
+    this._dialog.style.display = 'block';
+
+  }
+
+  // ===========================================================
+  // Acciones sobre los elementos, paginación, etc...
+  // ===========================================================
+  doAction(value: { name: string, data: any }) {   
+    // =========================================================
     // Paginación
-    // ============================================================================================
+    // =========================================================
+    if (value.name === 'page') return this.goToPage(value.data);
     if (value.name === 'first'    ||
         value.name === 'previous' ||
         value.name === 'next'     ||
         value.name === 'last') return this.goToPage(value.name);
-    // ============================================================================================
+    // =========================================================
     // Check/Uncheck
-    // ============================================================================================
-    if (value.name === 'check-item') return console.log(value.name);
-
-    let __dlg = this.__getDialogWrapper();
-    __dlg.title.innerHTML = value.name;
-    __dlg.body.innerHTML = value.name;
-    __dlg.closeButton.onclick = __dlg.close;
-    __dlg.acceptButton.onclick = () => console.log('AcceptButton');
-
-    if (value.name === 'new') {
-      __dlg.title.innerHTML = 'Nuevo usuario';
-      __dlg.body.innerHTML = 'Introduzca los datos del nuevo usuario...';
+    // =========================================================
+    if (value.name === 'check-item') {
+      let target = this.paginationInfo.visibleItems[value.data];
+      target.__checked = !target.__checked;
+      this.syncTitle();
     }
-
-    if (value.name === 'delete') {
-      __dlg.title.innerHTML = 'Borrar usuario';
-      __dlg.body.innerHTML = '¿Está seguro de eliminar el usuario seleccionado?';
+    // =========================================================
+    // Borrado
+    // =========================================================
+    if (value.name === 'delete') return this.delete();
+    // =========================================================
+    // Nuevo
+    // =========================================================
+    if (value.name === 'new') return this.insert();
+    // =========================================================
+    // Edición (Seleccionado)
+    // =========================================================
+    if (value.name === 'edit'){
+      let __checkedItems = this.paginationInfo.getChecked();
+      if(__checkedItems.length == 0) return;
+      return this.edit(__checkedItems[0].item);
     }
-
-    if (value.name === 'edit' || value.name === 'edit-row') {
-      __dlg.title.innerHTML = 'Editar usuario';
-      __dlg.body.innerHTML = 'Modifique los datos del usuario en cuestión y pulse el botón aceptar';
+    // =========================================================
+    // Edición (link)
+    // =========================================================
+    if (value.name === 'edit-row'){
+      let __id = ~~value.data;
+      let __target = this.usuarios.where({ _id : __id })[0];
+      return this.edit(__target);
     }
-    __dlg.show();
+    // =========================================================
+    // Buscar
+    // =========================================================
+    if (value.name === 'search'){
+      if (value.data) {
+        this.usuarios = this.usuarios.where( u => u._nombre
+                                                   .toLowerCase()
+                                                   .includes(value.data.toLowerCase()));
+        return this.goToPage('first');
+      }
+      return this.loadData();
+    }
   }
 
-  private __getDialogWrapper(): any {
-    let __container = document.getElementById('dialog-container');
-    return {
-      container: __container,
-      title: __container.querySelector('.js-title'),
-      body: __container.querySelector('.js-content'),
-      closeButton: __container.querySelector('.js-close-button'),
-      acceptButton: __container.querySelector('.js-accept-button'),
-      close: function () { __container.style.display = 'none'; },
-      show: function () { __container.style.display = 'block'; }
-    }
+  showError(error: any) {
+
+    let __dlg = new DialogHelper().getDialogWrapper('dialog-container')        
+                                  .setTitle('Error')
+                                  .setBody (error.message)
+                                  .show();
+    console.error(error); 
   }
 
 }

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class VehiculoService {
 
-  private _url = '{0}/api/v1/vehiculos/';
+  private _url = '{0}/api/v1/vehiculos';
 
   constructor(@Inject('BASE_URL') baseUrl: string, public httpClient: HttpClient) {
     this._url = this._url.format(baseUrl);
@@ -17,7 +17,7 @@ export class VehiculoService {
   }
 
   public delete(id: Number): Observable<any> {
-    return this.httpClient.delete('{0}{1}'.format(this._url, id));
+    return this.httpClient.delete('{0}/{1}'.format(this._url, id));
   }
 
   public post(target: Vehiculo): Observable<Object> {  
@@ -43,4 +43,5 @@ export class VehiculoService {
            },
            { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) });
   }
+
 }

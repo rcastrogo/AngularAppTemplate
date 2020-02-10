@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Usuario } from '@app/models';
 import { Observable } from 'rxjs/Observable';
 
@@ -14,6 +14,34 @@ export class UsuarioService {
 
   public getAll(): Observable<Usuario[]> {
     return this.httpClient.get<Usuario[]>(this._url); 
+  }
+
+  public delete(id: Number): Observable<any> {
+    return this.httpClient.delete('{0}/{1}'.format(this._url, id));
+  }
+
+  public post(target: Usuario): Observable<Object> {  
+    return this.httpClient
+               .post(this._url,
+                     {
+                       Id          : target._id,
+                       Nif         : target._nif,
+                       Nombre      : target._nombre,
+                       Descripcion : target._descripcion
+                     },
+                     { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) });
+  }
+
+  public put(target: Usuario): Observable<Object> {
+    return this.httpClient
+      .put(this._url,
+           {
+             Id          : target._id,
+             Nif         : target._nif,
+             Nombre      : target._nombre,
+             Descripcion : target._descripcion
+           },
+           { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) });
   }
 
 }
