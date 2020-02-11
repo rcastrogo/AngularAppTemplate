@@ -1,9 +1,28 @@
+
+
+
 <div class="w3-container w3-margin-bottom">
   <h1>Tabbly Report sample</h1>
   <p>Informes de prueba usando Tabbly.js</p>
   <button class="w3-button w3-white w3-border" (click)="listVehiculos()">Vehículos</button>
   <button class="w3-button w3-white w3-border" (click)="listUsuarios()">Usuarios</button>
   <button class="w3-button w3-white w3-border" (click)="listProveedores()">Proveedores</button>
+
+  <button class="w3-button w3-white w3-border" (click)="runWebWorker()">Web worker</button>
+
+  <div id="progress-bar-container" style="display:none;">
+    <div id="progress-bar-message" class="w3-center"></div>
+    <div class="w3-light-grey w3-round">
+      <div id="progress-bar" class="w3-container w3-green w3-center w3-round" style="width:0"></div>
+    </div>
+  </div>
+
 </div>
 
+
 <div id="table-container" class="w3-container w3-margin-bottom"></div>
+
+<div class="w3-container w3-margin-bottom">
+  <div id="rowsContainer">
+  </div>
+</div>

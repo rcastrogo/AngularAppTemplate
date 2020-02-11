@@ -1,3 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 
 tr th.sorteable{cursor:pointer; }
+
+.rpt-report-header{ font-size:300%; font-weight:bold; text-align:center; padding:15px 0; border:solid 1px silver; border-radius:10px; margin:5px; }  
+.rpt-report-header-sub { border-bottom:solid 1px silver; text-align:right; padding:5px;}
+.rpt-header{ background-color:white; padding:2px; margin:0; margin-bottom:2px; border-bottom:solid 1px gray;}
+.rpt-detail{ background-color:white; padding:2px; margin:0; margin-top:5px; border-bottom:solid 1px gray;}
+.rpt-footer{ background-color:white; padding:2px; margin:0; margin-top:2px; border-top:solid 1px gray; text-align:right; font-weight:bold;}
+.rpt-total { background-color:whitesmoke; padding:2px; margin:0; margin-top:5px; border-top:solid 1px gray; font-weight:bold; font-size:150%; }
+
