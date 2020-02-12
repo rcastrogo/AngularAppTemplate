@@ -9,7 +9,7 @@ export class TableHeaderComponent implements OnInit {
 
   @(Output('onAction')) onAction = new EventEmitter();
 
-  @(Input('pagination')) pagination: { title: string, data: any[], page: number };
+  @(Input('pagination')) pagination: PaginationInfo;
   constructor() { }
 
   ngOnInit() {

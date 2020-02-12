@@ -22,8 +22,12 @@
        
     CREATE section type:header id:PageHeader2 
     SET template
-      <div class="rpt-report-header">
-        desde: {self.location}
+      <div class="w3-center">
+        <div class="w3-panel w3-pale-yellow w3-border w3-round w3-display-container">
+            <span onclick="this.parentElement.style.display='none'"  class="w3-button w3-large w3-display-topright">&times;</span>
+          <h3>Ubicación: </h3>
+          <p>{self.location}</p>
+        </div>
       </div>
     END
     # ==========================================================================

@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Proveedor } from '@app/models';
 import { Observable } from 'rxjs/Observable';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class ProveedorService {
@@ -13,6 +14,9 @@ export class ProveedorService {
   }
 
   public getAll(): Observable<Proveedor[]> {
+    if (environment.production) {
+      return this.httpClient.get<Proveedor[]>("./assets/json/proveedores.json");
+    }
     return this.httpClient.get<Proveedor[]>(this._url);  
   }
 

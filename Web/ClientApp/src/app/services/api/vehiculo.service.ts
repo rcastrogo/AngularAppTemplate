@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Vehiculo } from '@app/models';
 import { Observable } from 'rxjs/Observable';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class VehiculoService {
@@ -13,6 +14,9 @@ export class VehiculoService {
   }
 
   public getAll(): Observable<Vehiculo[]> {
+    if (environment.production) {
+      return this.httpClient.get<Vehiculo[]>("./assets/json/vehiculos.json");
+    }
     return this.httpClient.get<Vehiculo[]>(this._url); 
   }
 

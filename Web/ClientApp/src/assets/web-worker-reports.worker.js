@@ -748,8 +748,10 @@ function __loadAndRender(o){
   importScripts(o.report.source + cacheBreaker);      
   
   function __onDataReady(o){
+    var __data = JSON.parse(o);
+    mediator.message({ type : 'report.data.ready', data : __data });
     mediator.message({ type : 'report.log.message', text : 'Generando...'});
-    module.ReportEngine.generateReport('', JSON.parse(o), mediator);
+    module.ReportEngine.generateReport('', __data, mediator);
   }
 
   mediator.message({ type : 'report.log.message', text : 'Solicitando datos...'}); 
@@ -764,6 +766,5 @@ function __loadAndRender(o){
 onmessage = function(e){
   
   if(e.data.action === 'load-report') { __loadAndRender(e.data);}
-  this.console.log(e);
 
 }

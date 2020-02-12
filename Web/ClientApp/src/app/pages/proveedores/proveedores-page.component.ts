@@ -5,7 +5,7 @@ import { utils, Paginator, DialogHelper } from '@extensions';
 import { Proveedor } from "@app/models/index";
 import { ProveedorService } from '@app/services/api/';
 
-const ROWS_PER_PAGE = 2;
+const ROWS_PER_PAGE = 5;
 
 @Component({
   selector: 'app-proveedores-page',

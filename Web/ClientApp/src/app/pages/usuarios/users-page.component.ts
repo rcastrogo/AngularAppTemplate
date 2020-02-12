@@ -5,7 +5,7 @@ import { utils, Paginator, DialogHelper } from '@extensions';
 import { Usuario } from "@app/models/index";
 import { UsuarioService } from '@app/services/api';
 
-const ROWS_PER_PAGE = 2;
+const ROWS_PER_PAGE = 5;
 
 @Component({
   selector: 'app-users-page',

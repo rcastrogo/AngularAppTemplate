@@ -6,6 +6,8 @@ import { VehiculoService,
          UsuarioService,
          ProveedorService,
          ResourceService } from '@app/services/api/';
+import { environment } from '../../../../environments/environment';
+import { StaticInjector } from '@angular/core/src/di/injector';
 
 @Component({
   selector: 'app-tabbly-reports-page',
@@ -15,6 +17,8 @@ import { VehiculoService,
 export class TabblyReportsPageComponent implements OnInit, OnDestroy {
 
   private _tabblyService: TabblyService;
+  public reportFile: string;
+  public reportData:string;
 
   constructor(public vehiculosApiService: VehiculoService,
               public usuariosApiService: UsuarioService,
@@ -35,15 +39,19 @@ export class TabblyReportsPageComponent implements OnInit, OnDestroy {
   public listUsuarios() {
 
     var __container = <HTMLDivElement>utils.$('table-container');
+    var __rowsContainer = <HTMLDivElement>utils.$('rowsContainer');
 
     this.resourceService
         .getResource('tabbly-reports/usu-0001.txt')
         .subscribe(result => {
+          this.reportFile = result;
           var __rd  = this._tabblyService.parse(result);
           this.usuariosApiService.getAll().subscribe(
             data => {
+              this.reportData = JSON.stringify(data, undefined, 2);
               this._tabblyService.fromReportDefinition(__rd, data, (html: string) => {       
                 __container.innerHTML = html;
+                __rowsContainer.innerHTML = ''
               });
             })
         });
@@ -53,15 +61,19 @@ export class TabblyReportsPageComponent implements OnInit, OnDestroy {
   public listProveedores() {
 
     var __container = <HTMLDivElement>utils.$('table-container');
+    var __rowsContainer = <HTMLDivElement>utils.$('rowsContainer');
 
     this.resourceService
         .getResource('tabbly-reports/pro-0001.txt')
         .subscribe(result => {
+          this.reportFile = result;
           var __rd  = this._tabblyService.parse(result);
           this.proveedoresApiService.getAll().subscribe(
             data => {
+              this.reportData = JSON.stringify(data, undefined, 2);
               this._tabblyService.fromReportDefinition(__rd, data, (html: string) => {       
-                __container.innerHTML = html;
+                __container.innerHTML     = html;
+                __rowsContainer.innerHTML = ''
               });
             })
         });
@@ -71,17 +83,21 @@ export class TabblyReportsPageComponent implements OnInit, OnDestroy {
   public listVehiculos() {
 
     var __container = <HTMLDivElement>utils.$('table-container');
+    var __rowsContainer = <HTMLDivElement>utils.$('rowsContainer');
+    
 
     this.resourceService
         .getResource('tabbly-reports/veh-0001.txt')
         .subscribe(result => {
+          this.reportFile = result;
           var __rd  = this._tabblyService.parse(result);
           this.vehiculosApiService.getAll().subscribe(
             data => {
+              this.reportData = JSON.stringify(data, undefined, 2);
               this._tabblyService.fromReportDefinition(__rd, data, (html: string) => {       
                 __container.innerHTML = html;
                 if(__rd.context.onEndfn) __rd.context.onEndfn({ data      : data,
-                                                                container : __container,
+                                                                container : __rowsContainer,
                                                                 utils     : utils });  
               });
             })
@@ -94,20 +110,46 @@ export class TabblyReportsPageComponent implements OnInit, OnDestroy {
     let __script = './assets/web-worker-reports.worker.js?t{0}'.format(new Date().getTime());
     let __messageHandler = new MessageHandler()
     this._worker = new Worker(__script);
-    this._worker.onmessage = ({data}) => __messageHandler.handle(JSON.parse(data));
+    this._worker.onmessage = ({data}) => {
+      let __data = JSON.parse(data);
+      if (__data.type && __data.type === 'report.data.ready') {
+        this.reportData = JSON.stringify(__data, undefined, 2);
+        return;
+      }
+      __messageHandler.handle(__data);
+    };
   }
 
   public runWebWorker() {
     if (this._worker) {
       var __container = <HTMLDivElement>utils.$('table-container');
+      var __rowsContainer = <HTMLDivElement>utils.$('rowsContainer');
       let __message = { action : 'load-report',
                         report : { source  : './web-worker-reports/pro-0001.js',
-                                   data    : '../api/v1/proveedores',
+                                   data    : environment.production ? './json/proveedores.json'
+                                                                    : '../api/v1/proveedores',
                                    method  : 'get' } };
       this._worker.postMessage(__message);
       __container.innerHTML = '';
+      __rowsContainer.innerHTML = '';
+      this.reportData = '';
+      this.reportFile = ''
     }
   }
+
+  public openTab(event, tabName) {
+    var i, x, tablinks;
+    x = document.getElementsByClassName("tab");
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablink");
+    for (i = 0; i < x.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" w3-dark-grey", "");
+    }
+    document.getElementById(tabName).style.display = "block";
+    event.currentTarget.className += " w3-dark-grey";
+  };
 
 }
 
@@ -119,7 +161,7 @@ class MessageHandler {
   private _progressBar: HTMLElement;
 
   constructor() {
-    this._container            = <HTMLElement>utils.$('rowsContainer');
+    this._container            = <HTMLElement>utils.$('table-container');
     this._progressBarContainer = <HTMLElement>utils.$('progress-bar-container');
     this._progressBarMessage   = <HTMLElement>utils.$('progress-bar-message');
     this._progressBar          = <HTMLElement>utils.$('progress-bar');

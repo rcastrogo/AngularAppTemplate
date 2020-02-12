@@ -2,6 +2,7 @@ import { Injectable, Inject } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Usuario } from '@app/models';
 import { Observable } from 'rxjs/Observable';
+import { environment } from '../../../environments/environment';
 
 @Injectable()
 export class UsuarioService {
@@ -13,6 +14,9 @@ export class UsuarioService {
   }
 
   public getAll(): Observable<Usuario[]> {
+    if (environment.production) {
+      return this.httpClient.get<Usuario[]>("./assets/json/usuarios.json");
+    }
     return this.httpClient.get<Usuario[]>(this._url); 
   }
 
