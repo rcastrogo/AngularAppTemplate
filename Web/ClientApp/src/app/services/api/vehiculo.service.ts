@@ -14,9 +14,9 @@ export class VehiculoService {
   }
 
   public getAll(): Observable<Vehiculo[]> {
-    if (environment.production) {
-      return this.httpClient.get<Vehiculo[]>("./assets/json/vehiculos.json");
-    }
+    //if (environment.production) {
+    //  return this.httpClient.get<Vehiculo[]>("./assets/json/vehiculos.json");
+    //}
     return this.httpClient.get<Vehiculo[]>(this._url); 
   }
 

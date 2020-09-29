@@ -14,9 +14,9 @@ export class ProveedorService {
   }
 
   public getAll(): Observable<Proveedor[]> {
-    if (environment.production) {
-      return this.httpClient.get<Proveedor[]>("./assets/json/proveedores.json");
-    }
+    //if (environment.production) {
+    //  return this.httpClient.get<Proveedor[]>("./assets/json/proveedores.json");
+    //}
     return this.httpClient.get<Proveedor[]>(this._url);  
   }
 
